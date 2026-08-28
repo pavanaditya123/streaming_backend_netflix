@@ -5,7 +5,7 @@
 # would waste time and layer cache. Instead the image contains the whole
 # monorepo and SERVICE_PATH decides which server.js the container runs.
 # =============================================================================
-FROM node:20-alpine AS deps
+FROM node:22-alpine AS deps
 
 WORKDIR /app
 
@@ -25,7 +25,7 @@ COPY services/recommendation-service/package.json services/recommendation-servic
 RUN npm ci --omit=dev --no-audit --no-fund
 
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS runtime
+FROM node:22-alpine AS runtime
 
 WORKDIR /app
 ENV NODE_ENV=production

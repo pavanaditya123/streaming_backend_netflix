@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
 
 jobs:
   # ===========================================================================
@@ -24,9 +24,9 @@ jobs:
     name: Lint and test (in-memory drivers)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -95,9 +95,9 @@ jobs:
       BUS_DRIVER: memory
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -130,9 +130,9 @@ jobs:
     name: End-to-end smoke run
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -165,10 +165,14 @@ jobs:
     name: Docker build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Validate docker-compose.yml
         run: docker compose config --quiet
+
+      # The default `docker` driver cannot export a build cache, so
+      # `cache-to: type=gha` below fails without a docker-container builder.
+      - uses: docker/setup-buildx-action@v3
 
       - name: Build the service image
         uses: docker/build-push-action@v6
