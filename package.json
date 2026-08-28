@@ -1,0 +1,32 @@
+{
+  "name": "streaming-backend-microservices",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "node scripts/dev-all.js",
+    "start:all": "node scripts/dev-all.js",
+    "test": "NODE_ENV=test node --test --test-concurrency=1 \"packages/**/test/**/*.test.js\" \"services/**/test/**/*.test.js\" \"test/*.test.js\" \"test/integration/**/*.test.js\"",
+    "test:unit": "NODE_ENV=test node --test --test-concurrency=1 \"packages/**/test/**/*.test.js\" \"services/**/test/**/*.test.js\"",
+    "test:e2e": "NODE_ENV=test node --test --test-concurrency=1 \"test/*.test.js\"",
+    "lint": "eslint .",
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js",
+    "bench": "node scripts/bench.js",
+    "smoke": "node scripts/smoke.js",
+    "test:watch": "NODE_ENV=test node --test --watch \"services/**/test/**/*.test.js\"",
+    "test:integration": "NODE_ENV=test node --test --test-concurrency=1 \"test/integration/**/*.test.js\""
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.7",
+    "eslint": "^9.13.0",
+    "supertest": "^7.0.0"
+  }
+}

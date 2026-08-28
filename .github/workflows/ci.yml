@@ -1,0 +1,195 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ===========================================================================
+  # 1. Lint + the whole test suite, entirely in memory.
+  #    No Postgres, no Redis, no Kafka — this is what the driver abstraction
+  #    buys us, and it keeps the feedback loop under a minute.
+  # ===========================================================================
+  test:
+    name: Lint and test (in-memory drivers)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit and integration tests
+        run: npm run test:unit
+        env:
+          NODE_ENV: test
+
+      - name: Full-platform end-to-end test
+        run: npm run test:e2e
+        env:
+          NODE_ENV: test
+
+      # Runs the real SQL against PGlite (Postgres compiled to WebAssembly), so
+      # a broken query fails here in seconds rather than waiting for the
+      # service-container job below.
+      - name: SQL repository tests (embedded Postgres)
+        run: npm run test:integration
+        env:
+          NODE_ENV: test
+
+  # ===========================================================================
+  # 2. The same code against REAL Postgres and REAL Redis.
+  #    Proves the SQL repositories and the Redis adapter actually work — the
+  #    in-memory job above can never catch a broken query.
+  # ===========================================================================
+  integration:
+    name: Integration (Postgres + Redis)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: streaming
+          POSTGRES_PASSWORD: streaming
+          POSTGRES_DB: streaming
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U streaming -d streaming"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://streaming:streaming@localhost:5432/streaming
+      REDIS_URL: redis://localhost:6379
+      DATA_DRIVER: postgres
+      CACHE_DRIVER: redis
+      BUS_DRIVER: memory
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply migrations
+        run: npm run migrate
+
+      - name: Migrations are idempotent (re-running is a no-op)
+        run: npm run migrate
+
+      - name: Seed the catalog
+        run: node scripts/seed.js --titles=500
+
+      - name: Repository tests against real Postgres and Redis
+        run: npm run test:integration
+        env:
+          NODE_ENV: test
+          # Refuse to silently fall back to the embedded engine: this job exists
+          # precisely to prove the code works against a real server.
+          REQUIRE_REAL_POSTGRES: '1'
+
+  # ===========================================================================
+  # 3. Boot the whole platform and drive it like a real client.
+  #    This is the job that answers "does it actually work end to end?".
+  # ===========================================================================
+  smoke:
+    name: End-to-end smoke run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start the platform
+        run: |
+          node scripts/dev-all.js > /tmp/platform.log 2>&1 &
+          echo "PLATFORM_PID=$!" >> $GITHUB_ENV
+
+      - name: Wait for the gateway to be ready
+        run: node scripts/wait-for.js http://localhost:3000/ops/services --timeout=60000
+
+      - name: Run the end-to-end walkthrough
+        run: npm run smoke
+
+      - name: Benchmark cached vs uncached
+        run: node scripts/bench.js --requests=200 --concurrency=20
+
+      - name: Platform logs
+        if: always()
+        run: tail -100 /tmp/platform.log
+
+  # ===========================================================================
+  # 4. The Docker image and compose file must stay valid.
+  # ===========================================================================
+  docker:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate docker-compose.yml
+        run: docker compose config --quiet
+
+      - name: Build the service image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: streaming-backend:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: The image boots and answers a health check
+        run: |
+          docker run -d --name gw -p 3000:3000 \
+            -e SERVICE_PATH=services/api-gateway/src/server.js \
+            -e DATA_DRIVER=memory -e CACHE_DRIVER=memory -e BUS_DRIVER=memory \
+            streaming-backend:ci
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000/health > /dev/null; then
+              echo "gateway is healthy"; docker logs gw; exit 0
+            fi
+            sleep 2
+          done
+          echo "gateway never became healthy"; docker logs gw; exit 1
