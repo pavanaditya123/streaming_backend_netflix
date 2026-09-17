@@ -209,6 +209,9 @@ describe('subscription + saga repository', () => {
     assert.equal(saga.history.length, 3, 'history is append-only');
     assert.equal(saga.history[2].to, 'COMPLETED');
     assert.equal(saga.payload.planId, 'premium');
+    assert.equal((await repo.listSagas({ userId: 'u1' })).length, 1);
+    assert.deepEqual(await repo.listSagas({ userId: 'u2' }), []);
+    assert.equal((await repo.listSagas()).length, 1, 'internal sweeper can still read all sagas');
   });
 
   test('event dedupe returns true once and false thereafter', async () => {

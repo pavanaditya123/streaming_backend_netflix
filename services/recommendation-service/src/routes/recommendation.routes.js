@@ -183,7 +183,10 @@ async function forYou({ userId, limit, ctx, catalogClient, historyClient }) {
   if (inProgress.length) {
     rails.push({
       title: 'Continue watching',
-      items: await hydrate(inProgress.map((h) => h.titleId), catalogClient, ctx)
+      items: (await hydrate(inProgress.map((h) => h.titleId), catalogClient, ctx)).map((title) => {
+        const entry = inProgress.find((h) => h.titleId === title.id);
+        return { ...title, resumeAtSeconds: entry.positionSeconds, progressPercent: entry.progressPercent };
+      })
     });
   }
 

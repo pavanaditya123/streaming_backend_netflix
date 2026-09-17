@@ -23,10 +23,10 @@ POST /api/v1/recommendations/search
 
 This is the most likely thing to be challenged, so the reasoning is explicit.
 
-This runs on the hot path of a search box. The requirements are: sub-millisecond,
-deterministic, free, works offline, and every branch independently testable. An
-LLM call would add hundreds of milliseconds, cost money per keystroke, and make
-results non-reproducible — which also makes them untestable.
+This runs on the hot path of a search box. The parser is designed for very low
+latency, deterministic output, offline use, and independent tests for every
+branch. An LLM call would add network latency, usage cost, and non-deterministic
+output.
 
 The cost of rules is **vocabulary coverage**: the parser only knows the words in
 [`lexicon.js`](../services/recommendation-service/src/domain/lexicon.js). That is

@@ -58,7 +58,7 @@ export function createHistoryRouter({ repo, cache }) {
       const { limit } = req.validatedQuery;
 
       const { value, cached } = await withCache(
-        cacheKeys.continueWatching(req.user.id),
+        `${cacheKeys.continueWatching(req.user.id)}:${limit}`,
         config.cacheTtl.continueWatching,
         () => repo.continueWatching(req.user.id, { limit }),
         { cache }
@@ -89,8 +89,10 @@ export function createHistoryRouter({ repo, cache }) {
     asyncHandler(async (req, res) => {
       const deleted = await repo.deleteEntry(req.user.id, req.params.titleId);
       if (!deleted) throw new NotFoundError('No history for this title');
-      await cache.del(cacheKeys.continueWatching(req.user.id));
+      await cache.delByPattern(`${cacheKeys.continueWatching(req.user.id)}:`);
       await cache.delByPattern(`wh:list:${req.user.id}:`);
+      await cache.delByPattern(`reco:${req.user.id}:`);
+      await cache.del(cacheKeys.home(req.user.id));
       res.status(204).end();
     })
   );

@@ -22,10 +22,12 @@
     "bench": "node scripts/bench.js",
     "smoke": "node scripts/smoke.js",
     "test:watch": "NODE_ENV=test node --test --watch \"services/**/test/**/*.test.js\"",
-    "test:integration": "NODE_ENV=test node --test --test-concurrency=1 \"test/integration/**/*.test.js\""
+    "test:integration": "NODE_ENV=test node --test --test-concurrency=1 \"test/integration/**/*.test.js\"",
+    "test:browser": "playwright test"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.7",
+    "@playwright/test": "^1.63.0",
     "eslint": "^9.13.0",
     "supertest": "^7.0.0"
   }

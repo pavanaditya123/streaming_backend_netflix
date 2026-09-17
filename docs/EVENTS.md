@@ -76,8 +76,9 @@ consumer does not stop trending from updating.
 
 ## Idempotency
 
-Kafka guarantees **at-least-once** delivery, so every consumer must assume it will
-see the same event twice. Each dedupes on `eventId` before doing anything:
+Kafka delivery can repeat, so every consumer must be designed with redelivery in
+mind. The watch-history, notification, billing, and saga consumers record the
+`eventId` before doing their work:
 
 ```js
 const fresh = await repo.markEventProcessed(event.eventId, 'watch-history');
@@ -95,8 +96,12 @@ VALUES ($1, $2, $3, NOW()) ON CONFLICT (id) DO NOTHING
 The id is `<consumer>:<eventId>`, so a different consumer group still gets to
 process the same event — dedupe is per-consumer, not global.
 
-Tested directly: publishing the identical event twice must not double the play
-count, and must not send two welcome emails.
+Tests cover duplicate protection in the consumers that implement it. The catalog
+popularity consumer currently has no dedupe record, so the same playback-started
+event can increment `view_count` twice. Also, the consumers currently commit the
+dedupe marker and the business mutation as separate operations. A crash between
+them can cause a retry to skip unfinished work. The production pattern is an
+inbox record and the business mutation in one local database transaction.
 
 ## Failure handling
 
@@ -107,8 +112,9 @@ attempt 1 → fail → wait → attempt 2 → fail → wait → attempt 3 → fa
 ```
 
 Parking the message matters more than it looks: without a DLQ, a single poison
-message blocks its partition forever and every subsequent event for those users
-stops flowing. Both bus adapters implement identical retry/DLQ behaviour.
+message can block later work on its partition. Both adapters exercise bounded
+retry and dead-letter paths, although the memory adapter is a test double rather
+than a complete Kafka emulator.
 
 A failing consumer group does not affect the others — there is a test for that too.
 

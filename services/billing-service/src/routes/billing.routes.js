@@ -30,9 +30,10 @@ export function createBillingRouter({ repo }) {
 
   router.get(
     '/payments/:id',
+    internalUser,
     asyncHandler(async (req, res) => {
       const payment = await repo.findPayment(req.params.id);
-      if (!payment) throw new NotFoundError('Payment not found');
+      if (!payment || payment.user_id !== req.user.id) throw new NotFoundError('Payment not found');
       res.json({ payment });
     })
   );

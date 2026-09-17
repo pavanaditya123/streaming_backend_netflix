@@ -132,11 +132,11 @@ export function createUserRouter({ repo }) {
     })
   );
 
-  // Internal lookup used by notification-service to resolve a display name/email.
+  // Internal lookup remains scoped to the forwarded user identity.
   router.get(
     '/:id',
     asyncHandler(async (req, res) => {
-      const user = await repo.findById(req.params.id);
+      const user = req.params.id === req.user.id ? await repo.findById(req.params.id) : null;
       if (!user) throw new NotFoundError('User not found');
       res.json({ user: publicUser(user) });
     })

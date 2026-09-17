@@ -64,16 +64,16 @@ real Postgres work over a real network hop.
 
 | Key | TTL | Invalidated by |
 |---|---|---|
-| `home:{userId}` | 30 s | TTL only — it is a composition of already-invalidated parts |
+| `home:{userId}` | 30 s | history changes, subscription activation / cancellation; TTL for other changes |
 | `entitlement:user:{userId}` | 300 s | subscription activated / cancelled |
 | `catalog:title:{id}` | 300 s | `playback.session.started` (view count changed) |
 | `catalog:trending:v1:{limit}` | 60 s | `playback.session.started` |
 | `catalog:list:{hash}` | 300 s | TTL only |
 | `catalog:similar:{id}:{limit}` | 300 s | TTL only |
 | `catalog:facets` | 300 s | TTL only |
-| `wh:continue:{userId}` | 60 s | any playback event for that user |
+| `wh:continue:{userId}:{limit}` | 60 s | any playback event for that user |
 | `wh:list:{userId}:{page}` | 60 s | any playback event for that user |
-| `reco:{userId|all}:{hash}` | 120 s | TTL only |
+| `reco:{userId or all}:{hash}` | 120 s | history changes for personalized keys; TTL for shared results |
 | `ratelimit:{id}:{bucket}` | window | expires with the window |
 
 Keys are built by [`cacheKeys`](../packages/shared/src/cache/index.js) rather

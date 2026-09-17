@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import express, { Router } from 'express';
+import { fileURLToPath } from 'node:url';
 import {
   createApp, getCache, authenticate, rateLimit,
   asyncHandler, callService, breakerStates
@@ -78,7 +79,14 @@ export function createGatewayApp({ cache = getCache(), clients = createClients()
     checks: { cache: async () => Boolean(await cache.ping()) },
     routes: [
       { path: '/api/v1', router: api },
-      { path: '/ops', router: ops }
+      { path: '/ops', router: ops },
+      { path: '/', router: express.static(fileURLToPath(new URL('../public/', import.meta.url)), {
+        setHeaders(res) {
+          res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
+          res.setHeader('X-Content-Type-Options', 'nosniff');
+          res.setHeader('Referrer-Policy', 'same-origin');
+        }
+      }) }
     ]
   });
 }

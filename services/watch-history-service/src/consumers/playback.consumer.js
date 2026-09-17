@@ -59,8 +59,11 @@ export function registerPlaybackConsumer({ bus, repo, cache }) {
       }
 
       // The user's history just changed, so their cached rows are stale.
-      await cache.del(cacheKeys.continueWatching(userId));
+      await cache.delByPattern(`${cacheKeys.continueWatching(userId)}:`);
       await cache.delByPattern(`wh:list:${userId}:`);
+      // Invalidate composed views after the history write has completed.
+      await cache.delByPattern(`reco:${userId}:`);
+      await cache.del(cacheKeys.home(userId));
     },
     {
       groupId: 'watch-history',

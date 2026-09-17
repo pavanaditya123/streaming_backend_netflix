@@ -43,8 +43,8 @@ export function createMemorySubscriptionRepo(db = getMemoryDb()) {
       if (!saga) return null;
       return sagas.update(id, { history: [...(saga.history || []), entry] });
     },
-    async listSagas({ limit = 50 } = {}) {
-      return sagas.find(() => true, { sort: (a, b) => b.__seq - a.__seq, limit });
+    async listSagas({ limit = 50, userId } = {}) {
+      return sagas.find((s) => userId === undefined || s.user_id === userId, { sort: (a, b) => b.__seq - a.__seq, limit });
     },
 
     // ---- idempotency / dedupe -------------------------------------------

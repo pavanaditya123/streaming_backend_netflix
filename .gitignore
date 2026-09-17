@@ -9,3 +9,6 @@ tmp/
 
 # Personal interview prep - not part of the project
 interview-prep/
+
+playwright-report/
+test-results/

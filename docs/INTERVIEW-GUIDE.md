@@ -17,9 +17,10 @@ will not forgive a confident explanation of code you cannot find.
 > billing, notifications and recommendations. It started as a monolith; that's
 > still in the repo under `legacy-monolith/`.
 >
-> Two things forced the split. First, playback and billing have completely
-> different scaling shapes — playback is thousands of requests a second, billing
-> is a handful a minute — and in one process you can't scale them separately.
+> Two things motivated the split. First, playback and billing have completely
+> different expected scaling shapes — playback is frequent and latency-sensitive,
+> while billing is lower-volume and correctness-sensitive — and in one process
+> you cannot scale them separately.
 > Second, `POST /play` was doing three writes the user didn't need before it
 > returned a stream URL, so any of them failing failed playback.
 >
@@ -49,9 +50,8 @@ The strongest answer starts by agreeing.
 > "For most projects the monolith is right, and I kept it in the repo to make
 > that point. Two specific things pushed me off it.
 >
-> Scaling shape: playback needs thousands of requests a second, billing needs a
-> handful a minute. One process means one scaling unit, so scaling playback meant
-> scaling billing too.
+> Scaling shape: playback is expected to receive much more traffic than billing.
+> One process means one scaling unit, so scaling playback would scale billing too.
 >
 > Failure blast radius: in the monolith, `POST /play` incremented a view count,
 > wrote watch history and queued a notification — all before returning a stream
@@ -68,9 +68,9 @@ debugging across services, no cross-service joins.
 
 Draw the state machine. Lead with *why*, not *what*:
 
-> "Charging a card is in billing, activating a subscription is in subscriptions —
-> different services, different schemas, so no shared transaction. And even one
-> transaction wouldn't help, because you can't roll back a credit card charge.
+> "Charging a card is in billing, while activating access is in subscriptions.
+> Even a distributed database transaction would not roll back an external credit
+> card charge.
 > The only way back is a second forward action: a refund.
 >
 > So it's a sequence of local transactions, each with a compensating action."
@@ -109,15 +109,15 @@ Four layers — count them off:
 
 1. **Request** — `Idempotency-Key` header; a retried POST replays the original
    result instead of starting a second saga.
-2. **Consumer** — every consumer inserts the `eventId` into a `processed_events`
-   table with `ON CONFLICT DO NOTHING`; `rowCount === 0` means already handled.
+2. **Consumer** — billing, subscriptions, notifications, and watch-history insert
+   the `eventId` into `processed_events`; catalog popularity currently does not.
 3. **Payment** — `billing.payments.idempotency_key` is `UNIQUE`. A redelivered
    charge command finds the row and replays its outcome.
 4. **State machine** — a terminal saga ignores every event, so a late duplicate
    cannot resurrect it.
 
-> "The database enforces it, not just application code — that's what makes it
-> hold under a race."
+> "These layers reduce duplicate effects, but they are not end-to-end exactly-once.
+> The dedupe marker and business mutation also need one local transaction."
 
 ### 5. "How did you get 1.2s down to 150ms?" / "Where does the speed come from?"
 
@@ -176,27 +176,27 @@ Pick the concrete example:
 This is a genuinely strong part of the project — do not undersell it.
 
 > "Every external dependency is behind an adapter with two implementations —
-> Postgres/memory, Redis/memory, Kafka/memory — chosen by an environment
-> variable. The in-memory bus implements the same contract as Kafka: consumer
-> groups, per-key ordering, retries, dead-letter. So the whole platform boots in
-> one command with nothing installed, and 224 tests run in about ten seconds in
-> CI with no service containers.
+> Postgres/memory, Redis/memory, Kafka/memory — chosen by environment variables.
+> The in-memory bus reproduces the behaviours used by the core tests: asynchronous
+> fan-out, per-key ordering, retries, and dead-letter capture. It does not emulate
+> Kafka brokers, offsets, rebalances, persistence, or same-group load balancing.
+> The whole platform boots with nothing installed, and 227 core tests run in
+> about ten seconds, plus two browser journeys.
 >
 > The SQL is still real and still tested. The integration suite runs every query
 > against PGlite — Postgres compiled to WebAssembly — and CI runs the same suite
 > again against a real postgres:16 container, with a flag that makes it fail
 > rather than silently fall back.
 >
-> That suite caught four real bugs while I was building it: a generated column
-> that wasn't immutable, an ambiguous column in a self-join, and a parameter used
-> as both INT and BIGINT."
+> That suite caught three PostgreSQL-specific bugs while I was building it: a
+> generated column that wasn't immutable, an ambiguous column in a self-join, and
+> a parameter used as both INT and BIGINT. Broader tests caught saga and API bugs."
 
 ### 9. "Why rules instead of an LLM for search?"
 
-> "It's on the hot path of a search box, so I wanted sub-millisecond,
-> deterministic, free and testable — an LLM adds hundreds of milliseconds and
-> makes results non-reproducible, which also makes them untestable. It parses in
-> about 0.1ms.
+> "It's on the hot path of a search box, so I wanted very low latency,
+> deterministic, offline and testable behaviour. An LLM adds a network call and
+> non-deterministic output. The local parser benchmark is around 0.1ms.
 >
 > The cost is vocabulary coverage, which is real. The vocabulary is data, not
 > code, so adding synonyms doesn't touch the parser, and there's a keyword
@@ -212,8 +212,9 @@ Never say "nothing". Have three real ones:
 
 > "First, the transactional outbox. Right now a saga writes its state and
 > publishes an event as two steps, so a crash between them is possible. I have a
-> timeout sweeper that catches the resulting stuck saga, but the correct fix is
-> writing to an outbox table in the same transaction and relaying from there.
+> timeout sweeper for old payment waits, but it does not cover every crash window.
+> The correct fix is writing to an outbox table in the same transaction and
+> relaying from there, plus atomic inbox handling on consumers.
 >
 > Second, the internal secret between services is one shared credential. That
 > should be mTLS or a service mesh.
@@ -256,10 +257,10 @@ Never say "nothing". Have three real ones:
 
 **"How would you scale this to 10 million users?"**
 > "Roughly: read replicas for catalog since it's read-heavy; partition watch
-> history by user id; more Kafka partitions and consumer instances — per-user
-> ordering still holds; Redis cluster; and scale playback independently, which is
-> the whole point of the split. The saga is already horizontally scalable because
-> its state is in Postgres, not in memory."
+> history by user id; add Kafka partitions and consumer instances; use a Redis
+> cluster; and scale playback independently. Before scaling the saga orchestrator
+> horizontally, I would add row claiming or optimistic concurrency plus an
+> outbox so two workers cannot execute the same transition."
 
 **"What's the hardest bug you hit?"**
 Use the real one — specific beats impressive:
@@ -289,7 +290,8 @@ Then:
 
 ```bash
 npm run bench        # your real cache numbers
-npm test             # 224 tests, ~10 seconds
+npm test             # 227 core tests, ~10 seconds
+npm run test:browser # the viewer journey in desktop and mobile Chromium
 ```
 
 If they want depth, open these three, in this order:

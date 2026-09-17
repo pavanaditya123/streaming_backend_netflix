@@ -108,10 +108,12 @@ export function createPgSubscriptionRepo() {
       return rows[0] || null;
     },
 
-    async listSagas({ limit = 50 } = {}) {
+    async listSagas({ limit = 50, userId } = {}) {
       const { rows } = await query(
-        `SELECT * FROM subscriptions.saga_instances ORDER BY created_at DESC LIMIT $1`,
-        [limit]
+        `SELECT * FROM subscriptions.saga_instances
+          WHERE ($2::text IS NULL OR user_id = $2)
+          ORDER BY created_at DESC LIMIT $1`,
+        [limit, userId ?? null]
       );
       return rows;
     },

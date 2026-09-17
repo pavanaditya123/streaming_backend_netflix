@@ -208,6 +208,7 @@ export class SubscribeSagaOrchestrator {
 
       // Entitlement is read on every playback request, so it lives in Redis.
       await this.cache.del(cacheKeys.entitlement(saga.user_id));
+      await this.cache.del(cacheKeys.home(saga.user_id));
 
       await this.handle(saga.id, { type: 'ACTIVATION_SUCCEEDED', payload: { paymentId } });
     } catch (err) {

@@ -100,11 +100,32 @@ describe('watch history is built from playback events', () => {
     // New activity must bust that cache rather than serve a stale list.
     await ctx.bus.publish(TOPICS.PLAYBACK_EVENTS, stopped('u1', 'tt_b', 900));
     await ctx.bus.drain();
-    assert.equal(await ctx.cache.get(cacheKeys.continueWatching('u1')), null);
+    assert.equal(await ctx.cache.get(`${cacheKeys.continueWatching('u1')}:10`), null);
 
     const third = await request(ctx.app).get('/watch-history/continue').set(asUser('u1'));
     assert.equal(third.body.cached, false);
     assert.equal(third.body.items.length, 2);
+  });
+
+  test('continue-watching limits do not share a cache entry', async () => {
+    await ctx.bus.publish(TOPICS.PLAYBACK_EVENTS, stopped('u1', 'tt_a', 1800));
+    await ctx.bus.publish(TOPICS.PLAYBACK_EVENTS, stopped('u1', 'tt_b', 900));
+    await ctx.bus.drain();
+    const one = await request(ctx.app).get('/watch-history/continue?limit=1').set(asUser('u1'));
+    const two = await request(ctx.app).get('/watch-history/continue?limit=2').set(asUser('u1'));
+    assert.equal(one.body.items.length, 1);
+    assert.equal(two.body.items.length, 2);
+  });
+
+  test('history updates invalidate personalized home and recommendation caches', async () => {
+    await ctx.cache.set(cacheKeys.home('u1'), { rails: [] }, 60);
+    await ctx.cache.set(cacheKeys.recommendation('u1', 'for-you:12'), { rails: [] }, 60);
+    await ctx.cache.set(cacheKeys.home('u2'), { rails: [] }, 60);
+    await ctx.bus.publish(TOPICS.PLAYBACK_EVENTS, stopped('u1', 'tt_a', 1800));
+    await ctx.bus.drain();
+    assert.equal(await ctx.cache.get(cacheKeys.home('u1')), null);
+    assert.equal(await ctx.cache.get(cacheKeys.recommendation('u1', 'for-you:12')), null);
+    assert.ok(await ctx.cache.get(cacheKeys.home('u2')), 'another user cache is preserved');
   });
 
   test('progress events keep the resume point moving', async () => {

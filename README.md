@@ -1,4 +1,4 @@
-# Streaming Platform Backend
+# Frame — Streaming Platform
 
 A streaming service backend (think Netflix/Prime Video) built as **8 microservices
 behind an API gateway**, using **Node.js, Kafka, Redis and PostgreSQL**.
@@ -41,9 +41,13 @@ repo, with comments pointing at the exact lines that forced each split.
 
 ```bash
 npm install
-npm run dev        # all 9 services, in-memory adapters
+npm run dev        # frontend + all 9 services, in-memory adapters
 npm run smoke      # in another terminal — full end-to-end walkthrough
 ```
+
+Open **http://localhost:3000** for the responsive Frame frontend. Create an account, choose a demo plan, browse or search the catalog, and start a playback demo. The slider saves progress through the playback service; My account includes profile editing, subscriptions, payments, notifications, and session management.
+
+The frontend is served by the gateway with no separate build or dependencies. Payments are simulated, movie media is not bundled, and memory-mode accounts reset on restart. This is a runnable portfolio project, not a production video distribution or payment system.
 
 **With real infrastructure:**
 
@@ -71,9 +75,9 @@ The only difference between the two is three environment variables. See
 | **notification-service** | 3007 | Email/push, generated from events. | consumes 3 topics |
 | **recommendation-service** | 3008 | Natural-language search over 26 intents. | catalog, watch-history |
 
-Each service owns its own **database schema** and no service reads another's
-tables. In production these would be separate database instances; separate
-schemas enforce the same boundary while keeping local development to one container.
+Each service owns its own **database schema** and the repository code does not
+read another service's tables. Local development uses one Postgres instance;
+production can strengthen the boundary with separate roles or instances.
 
 ---
 
@@ -81,9 +85,9 @@ schemas enforce the same boundary while keeping local development to one contain
 
 ### 1. The Subscribe Saga
 
-Activating a subscription spans two services and two databases: charge a card
-(billing), then activate the subscription (subscriptions). There is no
-distributed transaction, and a database rollback cannot un-charge a credit card.
+Activating a subscription spans two services: billing records a payment and the
+subscription service activates access. The decisive boundary is the external
+payment side effect: a database rollback cannot un-charge a card.
 
 So it runs as a saga — a sequence of local transactions, each with a
 **compensating action** if a later step fails:
@@ -108,7 +112,9 @@ The state machine is a **pure function** in
 no database, no Kafka, no clock — so every branch including the compensation
 paths is unit-tested. The orchestrator executes the commands it returns.
 
-Saga state lives in Postgres, so a crash mid-saga does not lose it.
+Saga state lives in Postgres, so a process restart does not erase its history.
+Full automatic recovery still needs an outbox, atomic consumer inbox handling,
+and reconciliation; the current sweeper handles old `AWAITING_PAYMENT` sagas.
 
 → [docs/SAGA.md](docs/SAGA.md)
 
@@ -134,11 +140,10 @@ are numbers from a real run, not estimates. They grow substantially with a real
 Postgres, a larger catalog and real network hops between containers; the cached
 column stays roughly flat, which is the whole point.
 
-Caches are **invalidated by events**, not by TTL alone: stopping playback drops
-your continue-watching cache, and cancelling a subscription drops your
-entitlement cache immediately — so a cancelled user cannot keep streaming off a
-stale entry. There is also single-flight stampede protection, so 20 concurrent
-misses on the same key produce exactly one origin call.
+Caches use **active invalidation as well as TTL**: a playback event drops that
+user's continue-watching cache, while subscription commands explicitly delete
+entitlement and home keys. There is also single-flight stampede protection, so
+20 concurrent misses on the same key produce exactly one origin call.
 
 → [docs/CACHING.md](docs/CACHING.md)
 
@@ -164,9 +169,9 @@ It handles things like *"what was I watching"*, *"90s movies rated above 8"*,
 *"surprise me"*.
 
 **It is rules, not an LLM** — and that is a deliberate trade-off. This runs on the
-hot path of a search box, so it needs to be sub-millisecond, deterministic,
-free, offline-capable, and testable branch by branch. An LLM would add hundreds
-of milliseconds and make results non-reproducible. The cost is vocabulary
+hot path of a search box, so the parser is designed for very low latency,
+deterministic output, offline use, and branch-by-branch tests. An LLM would add a
+network call and non-deterministic output. The cost is vocabulary
 coverage, which is why the vocabulary lives in
 [`lexicon.js`](services/recommendation-service/src/domain/lexicon.js) as data you
 can extend without touching the parser.
@@ -187,12 +192,13 @@ Every external dependency sits behind an adapter with two implementations:
 | `CACHE_DRIVER` | Map with TTL | `redis` |
 | `BUS_DRIVER` | in-process pub/sub | `kafka` |
 
-The in-memory event bus implements the same contract as Kafka — consumer groups,
-per-key ordering, bounded retries, dead-letter queue — so the code above it
-cannot tell the difference.
+The in-memory event bus reproduces the behaviours the core suite needs:
+asynchronous fan-out, per-key ordering, bounded retries, and dead-letter capture.
+It does not emulate brokers, offsets, partitions, rebalances, persistence, or
+same-group load balancing.
 
 This is not a testing gimmick; it is what lets the entire platform boot in one
-command on a laptop with nothing installed, and it lets **224 tests run in ~10
+command on a laptop with nothing installed, and it lets **227 tests run in ~10
 seconds in CI with no service containers**. The SQL is still real and still
 tested — see below.
 
@@ -201,13 +207,24 @@ tested — see below.
 ## Testing
 
 ```bash
-npm test               # everything (224 tests, ~10s)
+npm test               # everything (227 tests, ~10s)
 npm run test:unit      # pure logic + per-service integration
+npm run test:browser   # desktop + mobile browser journeys (setup below)
 npm run test:e2e       # all 9 services on real ports, in one process
 npm run test:integration  # every SQL query against a real Postgres engine
 npm run smoke          # drive a running stack end to end
 npm run bench          # latency measurements
 ```
+
+For browser tests, install Chromium once:
+
+```bash
+npx playwright install chromium
+npm run test:browser
+```
+
+Browser tests start their own memory stack on ports 4300–4308. To use an existing
+Chrome installation, set `PLAYWRIGHT_CHROMIUM_EXECUTABLE` to its executable path.
 
 **The SQL is genuinely tested.** `test:integration` runs every Postgres query
 against [PGlite](https://pglite.dev) — real Postgres compiled to WebAssembly — so
@@ -215,16 +232,18 @@ it needs no database installed, and CI runs the same suite again against a real
 `postgres:16` container with `REQUIRE_REAL_POSTGRES=1` so it cannot silently
 fall back.
 
-That suite caught four real bugs while this was being built: a non-immutable
-generated column, an ambiguous column reference in a self-join, and a parameter
-used as both `INT` and `BIGINT`.
+That suite caught three PostgreSQL-specific bugs while this was being built: a
+non-immutable generated column, an ambiguous column reference in a self-join,
+and a parameter used as both `INT` and `BIGINT`. Broader tests also caught a saga
+refund-source bug and API contract mistakes.
 
-CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs four jobs:
+CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs five jobs:
 
 1. **test** — lint, unit, e2e, and SQL against embedded Postgres
 2. **integration** — the same SQL against real Postgres + Redis containers
 3. **smoke** — boots the platform and drives it like a client, then benchmarks it
 4. **docker** — builds the image, validates compose, boots a container
+5. **browser** — drives signup, plans, playback, resume, search, and account management in desktop and mobile Chromium
 
 ---
 
@@ -269,6 +288,7 @@ Errors are uniform:
 
 | Doc | What is in it |
 |---|---|
+| [FRONTEND.md](docs/FRONTEND.md) | Browser app, setup, test commands, demo limitations |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Why these boundaries, request flows, trade-offs |
 | [SAGA.md](docs/SAGA.md) | The saga in detail, every failure path |
 | [CACHING.md](docs/CACHING.md) | Every cache key, TTL and invalidation trigger |
@@ -286,6 +306,7 @@ packages/shared/          config, logger, errors, metrics, auth, middleware
   src/cache/              MemoryCache | RedisCache + withCache
   src/bus/                MemoryBus | KafkaBus + topics + envelope
   src/db/                 pg pool + in-memory table engine
+services/api-gateway/public/  browser app, styles, HTML (served on port 3000)
 services/<name>/
   src/domain/             pure logic — no I/O, heavily unit-tested
   src/repo/               *.memory.js and *.pg.js behind one interface

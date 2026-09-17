@@ -11,7 +11,7 @@ broken independently of the others?*
 
 | Service | Scaling shape | Failure tolerance |
 |---|---|---|
-| playback | Very high write rate, latency-critical | Must never go down; users are mid-stream |
+| playback | Expected high write rate, latency-critical | Availability matters while users are streaming |
 | catalog | Very high read rate, rarely written | Cacheable; slightly stale is fine |
 | watch-history | High write rate, tolerates lag | Can be seconds behind with no user impact |
 | subscription/billing | Very low volume, correctness-critical | Slow is acceptable; wrong is not |
@@ -26,8 +26,8 @@ possible argument that they do not belong in one process.
 ### Starting playback (synchronous, latency-critical)
 
 ```
-client ──► gateway ──► playback ──┬──► subscription  GET /entitlement   (Redis, ~1ms)
-                                  └──► catalog       GET /titles/:id    (Redis, ~1ms)
+client ──► gateway ──► playback ──┬──► subscription  GET /entitlement   (cached)
+                                  └──► catalog       GET /titles/:id    (cached)
                                         │
                                   authorize (pure function)
                                         │
@@ -39,8 +39,10 @@ client ──► gateway ──► playback ──┬──► subscription  GET
 ```
 
 The two upstream calls run **in parallel** and both are cached on the other side.
-The Kafka publish is fire-and-forget: playback does not wait for watch-history,
-catalog or notifications, and does not fail if they are down.
+Playback awaits the broker publish acknowledgement, then returns without waiting
+for watch-history, catalog, or notifications to process the event. A Kafka outage
+can therefore fail the request after the session row has been written; a
+transactional outbox is the production fix for that window.
 
 ### After playback (asynchronous fan-out)
 
@@ -50,8 +52,9 @@ playback.events ──────┼──► catalog         increment view co
                       └──► notification    only if the title was finished
 ```
 
-Three consumer groups, three independent failure domains. Each dedupes on
-`eventId` because Kafka is at-least-once.
+Three consumer groups process the event independently. Watch-history and
+notifications dedupe on `eventId`; the current catalog popularity consumer does
+not, so a redelivery can overcount views. That is a known gap.
 
 ### Subscribing (asynchronous, orchestrated)
 
@@ -84,12 +87,13 @@ trust the forwarded `x-user-id`. This means:
 
 - One place to change auth, rotate keys, or add claims.
 - Services do not each carry JWT-verification code.
-- A service is not reachable from outside with a forged identity.
+- Requests that bypass the gateway still need the internal credential.
 
-The obvious weakness is that the shared secret is a single credential. In
-production this is where you would put mTLS or a service mesh; the header
-approach is the same shape, just simpler to run. The tests assert this boundary
-holds (`services/user-service/test/auth.test.js`).
+The obvious weakness is that the shared secret is a single credential. Compose
+also publishes the downstream ports for local debugging, so the header is the
+active protection in development. Production should expose only the gateway and
+use network policy plus mTLS or workload identity. The tests assert that the
+internal-header check holds (`services/user-service/test/auth.test.js`).
 
 ## Resilience
 
@@ -100,8 +104,8 @@ holds (`services/user-service/test/auth.test.js`).
 | Graceful degradation | `home.route.js` | One slow service blanking the whole home screen; each call degrades to `null` |
 | Consumer retry + DLQ | both bus adapters | A poison message blocking a partition forever |
 | Idempotency keys | subscription + billing | A retried request charging twice |
-| Event dedupe | every consumer | At-least-once delivery double-counting |
-| Saga timeout sweeper | `orchestrator.js` | A lost billing reply leaving a subscription pending forever |
+| Event dedupe | stateful consumers except catalog popularity | Many at-least-once redeliveries causing duplicate effects |
+| Saga timeout sweeper | `orchestrator.js` | An old `AWAITING_PAYMENT` saga remaining pending forever |
 | Session reaper | `playback/server.js` | A crashed client holding a stream slot forever |
 | Stampede protection | `withCache` | A thundering herd on one cold key |
 
@@ -135,12 +139,14 @@ Being honest about the gap between this and production:
   a real Stripe/Razorpay integration — but it sits behind the interface a real
   one would use, and it fails deterministically so the compensation path is
   demonstrable.
-- **One Postgres instance, schema per service.** Real isolation would be
-  separate instances. The schema boundary enforces the same rule in code.
-- **No transactional outbox.** A saga writes its state and publishes an event as
-  two steps; a crash between them is possible. The timeout sweeper catches the
-  resulting stuck saga. A production system would write to an outbox table in
-  the same transaction and relay from there.
+- **One Postgres instance, schema per service.** The repository code respects
+  ownership, but schemas alone do not enforce service isolation. Production can
+  add separate roles or instances.
+- **No transactional outbox or atomic consumer inbox.** State changes and event
+  publishing are separate steps, and consumer dedupe markers are separate from
+  their business writes. The timeout sweeper handles old `AWAITING_PAYMENT`
+  sagas, but does not close every crash window. Production should commit outgoing
+  events with state and commit incoming event IDs with consumer mutations.
 - **JWT has no refresh token or revocation list.**
 - **No distributed tracing backend.** Request ids propagate correctly, but
   nothing collects them into spans.

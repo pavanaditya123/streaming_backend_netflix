@@ -87,8 +87,8 @@ export function createPlaybackRouter({ repo, bus, catalogClient, subscriptionCli
         created_at: now
       });
 
-      // Fire-and-forget fact. watch-history, catalog and recommendations all
-      // react to this; playback does not wait for any of them.
+      // Publish a fact and await the broker acknowledgement. Playback does not
+      // wait for watch-history, catalog, or notification consumers to run.
       await bus.publish(
         TOPICS.PLAYBACK_EVENTS,
         createEvent(

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#101113" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Frame — Your next great story</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header>
+      <a href="#home" class="brand">FRAME<span>●</span></a>
+      <nav aria-label="Main navigation">
+        <a href="#home">Discover</a><a href="#movies">Movies</a
+        ><a href="#series">Series</a><a href="#plans">Plans</a
+        ><a href="#account">My account</a>
+      </nav>
+      <button id="auth-button" class="quiet">Sign in ↗</button>
+    </header>
+    <main id="main" tabindex="-1"></main>
+    <footer>
+      <a class="brand" href="#home">FRAME<span>●</span></a
+      ><span>A little escape. A great story.</span
+      ><small>Portfolio demo · Simulated payments and playback</small>
+    </footer>
+    <div id="notice" role="status" aria-live="polite" hidden></div>
+    <dialog id="modal" aria-labelledby="modal-title">
+      <button id="close-modal" class="close" aria-label="Close dialog">
+        ×
+      </button>
+      <div id="modal-content"></div>
+    </dialog>
+  </body>
+</html>

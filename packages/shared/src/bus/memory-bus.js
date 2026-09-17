@@ -4,13 +4,14 @@ import { TOPICS } from './topics.js';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /**
- * In-process event bus with the same contract as the Kafka adapter:
- *  - consumer groups (each group gets its own copy of every message)
+ * In-process event bus that reproduces the behaviours used by the core tests:
+ *  - named subscriptions (each subscription gets a copy of every message)
  *  - per-key ordering
  *  - bounded retries then a dead-letter topic
  *
- * Delivery is asynchronous (like Kafka), so tests use `drain()` to wait until
- * the bus is quiet instead of sleeping for an arbitrary time.
+ * It is not a Kafka emulator: it has no broker, offsets, rebalances, partitions,
+ * persistence, or same-group load balancing. Delivery is asynchronous, so tests
+ * use `drain()` instead of sleeping for an arbitrary time.
  */
 export class MemoryBus {
   constructor({ maxRetries = 3, retryDelayMs = 5 } = {}) {

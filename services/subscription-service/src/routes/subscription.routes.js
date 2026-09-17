@@ -138,8 +138,9 @@ export function createSubscriptionRouter({ repo, bus, cache, orchestrator }) {
   /** Saga instances, for debugging and for the demo script. */
   router.get(
     '/sagas',
-    asyncHandler(async (_req, res) => {
-      const sagas = await repo.listSagas({ limit: 50 });
+    internalUser,
+    asyncHandler(async (req, res) => {
+      const sagas = await repo.listSagas({ limit: 50, userId: req.user.id });
       res.json({
         items: sagas.map((s) => ({
           id: s.id,
@@ -157,9 +158,10 @@ export function createSubscriptionRouter({ repo, bus, cache, orchestrator }) {
 
   router.get(
     '/sagas/:id',
+    internalUser,
     asyncHandler(async (req, res) => {
       const saga = await repo.findSaga(req.params.id);
-      if (!saga) throw new NotFoundError('Saga not found');
+      if (!saga || saga.user_id !== req.user.id) throw new NotFoundError('Saga not found');
       res.json({ saga });
     })
   );
@@ -195,8 +197,9 @@ export function createSubscriptionRouter({ repo, bus, cache, orchestrator }) {
         cancelled_at: new Date().toISOString()
       });
 
-      // Entitlement is cached — drop it now so playback stops immediately.
+      // Drop entitlement and the composed home view before another stream starts.
       await cache.del(cacheKeys.entitlement(sub.user_id));
+      await cache.del(cacheKeys.home(sub.user_id));
 
       await bus.publish(
         TOPICS.SUBSCRIPTION_EVENTS,

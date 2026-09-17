@@ -144,7 +144,8 @@ const previous = await repo.findIdempotentResult(`subscribe:${userId}:${key}`);
 if (previous) return res.status(202).json({ ...previous, idempotentReplay: true });
 ```
 
-**2. Consumer level** — every consumer dedupes on `eventId` before acting:
+**2. Consumer level** — the billing and saga consumers dedupe on `eventId` before
+acting:
 
 ```sql
 INSERT INTO processed_events (id, ...) VALUES ($1, ...) ON CONFLICT (id) DO NOTHING
@@ -166,16 +167,18 @@ ignores every event, so a late duplicate cannot resurrect a finished saga.
 ## Timeouts
 
 If billing never replies — crash, lost message, network partition — the saga
-would sit in `AWAITING_PAYMENT` forever. A background sweeper fails any saga that
-has been non-terminal for too long:
+would sit in `AWAITING_PAYMENT` forever. A background sweeper fails an old saga
+in that specific state:
 
 ```js
 sweepStalledSagas({ repo, orchestrator, timeoutMs: 60_000 })
 ```
 
-It feeds a synthetic `CHARGE_FAILED` into the saga, which drives it through the
-normal failure path — the user is notified and no state is left dangling. The
-partial index `saga_stalled_idx` makes finding those rows cheap.
+It feeds a synthetic `CHARGE_FAILED` into the saga and drives the normal failure
+path. The current implementation lists recent sagas and filters them in
+JavaScript, so the partial `saga_stalled_idx` is not used by that query. The
+sweeper also does not recover every later state; an outbox, atomic inbox handling,
+and reconciliation are still needed for complete crash recovery.
 
 ## Seeing it work
 
@@ -198,9 +201,8 @@ the payment row reads `refunded` with a refund id.
 
 ## Trade-offs
 
-**What this buys:** no distributed transaction; every step independently
-retryable; the current state is queryable; money is never left in an inconsistent
-place; participants stay decoupled.
+**What this buys:** no cross-service transaction; explicit compensation; a
+queryable current state and history; independently owned participant data.
 
 **What it costs:**
 

@@ -64,7 +64,8 @@ console.log('\n  Streaming platform is up\n');
 for (const { name, port } of servers) {
   console.log(`    ${name.padEnd(24)} http://localhost:${port}`);
 }
-console.log(`\n  Public API   http://localhost:${config.ports.gateway}/api/v1`);
+console.log(`\n  Frontend     http://localhost:${config.ports.gateway}`);
+console.log(`  Public API   http://localhost:${config.ports.gateway}/api/v1`);
 console.log(`  Health       http://localhost:${config.ports.gateway}/ops/services`);
 console.log(`  Drivers      data=${config.drivers.data} cache=${config.drivers.cache} bus=${config.drivers.bus}\n`);
 console.log('  Try:  npm run smoke     (full end-to-end walkthrough)');

@@ -117,6 +117,20 @@ after(async () => {
 
 describe('platform end-to-end', () => {
   describe('health', () => {
+    test('the gateway serves the frontend and keeps unknown API routes as JSON', async () => {
+      const root = `http://127.0.0.1:${PORTS.gateway}`;
+      const page = await fetch(root);
+      assert.equal(page.status, 200);
+      assert.match(page.headers.get('content-type'), /text\/html/);
+      assert.match(page.headers.get('content-security-policy'), /script-src 'self'/);
+      assert.match(await page.text(), /Frame — Your next great story/);
+      for (const asset of ['/app.js', '/styles.css']) {
+        assert.equal((await fetch(root + asset)).status, 200);
+      }
+      const missing = await fetch(root + '/does-not-exist');
+      assert.equal(missing.status, 404);
+      assert.ok((await missing.json()).error);
+    });
     test('every service reports ready through the gateway', async () => {
       const res = await fetch(`http://127.0.0.1:${PORTS.gateway}/ops/services`);
       const body = await res.json();
@@ -292,11 +306,27 @@ describe('platform end-to-end', () => {
     test('a user cannot read another user data', async () => {
       const a = await registerUser();
       const b = await registerUser();
-      await subscribe(a.token);
+      const started = await subscribe(a.token);
 
       const subs = await api('/subscriptions', { token: a.token });
       const stolen = await api(`/subscriptions/${subs.body.items[0].id}`, { token: b.token });
       assert.equal(stolen.status, 403);
+      const sagaId = started.body.sagaId;
+      assert.equal((await api(`/subscriptions/sagas/${sagaId}`, { token: a.token })).status, 200);
+      assert.equal((await api(`/subscriptions/sagas/${sagaId}`, { token: b.token })).status, 404);
+      const otherSagas = await api('/subscriptions/sagas', { token: b.token });
+      assert.deepEqual(otherSagas.body.items, []);
+      const ownSagas = await api('/subscriptions/sagas', { token: a.token });
+      assert.ok(ownSagas.body.items.some((s) => s.id === sagaId));
+      const payments = await api('/billing/payments', { token: a.token });
+      const paymentId = payments.body.items[0].id;
+      assert.equal((await api(`/billing/payments/${paymentId}`, { token: a.token })).status, 200);
+      assert.equal((await api(`/billing/payments/${paymentId}`, { token: b.token })).status, 404);
+      // Even gateway path normalization must not expose another user's profile.
+      const foreignProfile = await fetch(`http://127.0.0.1:${PORTS.user}/users/${a.userId}`, {
+        headers: { 'x-internal-secret': config.auth.internalSecret, 'x-user-id': b.userId }
+      });
+      assert.equal(foreignProfile.status, 404);
     });
   });
 
