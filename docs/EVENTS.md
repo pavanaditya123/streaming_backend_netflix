@@ -66,7 +66,7 @@ order still comes out `[1, 2, 3]`.
 |---|---|---|
 | `watch-history` | playback.events | build progress + continue-watching |
 | `catalog-popularity` | playback.events | view counts, trending |
-| `notifications` | playback, subscription, user events | email/push |
+| `notifications-<topic>` | playback, subscription, user events (one group each) | email/push |
 | `billing-commands` | billing.commands | charge / refund |
 | `subscription-saga` | billing.events | drive the saga |
 

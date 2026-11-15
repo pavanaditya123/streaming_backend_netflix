@@ -56,7 +56,10 @@ export function registerNotificationConsumers({ bus, repo, deliver }) {
 
           log.info({ userId, channel: rendered.channel, subject: rendered.subject }, 'notification created');
         },
-        { groupId: 'notifications' }
+        // One group per topic. Kafka expects every member of a group to
+        // subscribe to the same topics; mixing them makes the group rebalance
+        // over and over.
+        { groupId: `notifications-${topic}` }
       )
     )
   );

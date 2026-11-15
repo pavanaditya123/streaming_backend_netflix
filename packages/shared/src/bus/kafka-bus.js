@@ -1,6 +1,10 @@
 import { Kafka, logLevel } from 'kafkajs';
 import { metrics } from '../metrics.js';
+import { createLogger } from '../logger.js';
 import { TOPICS } from './topics.js';
+
+const log = createLogger('kafka-bus');
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * Kafka adapter (production driver).
@@ -15,6 +19,8 @@ export class KafkaBus {
     this.consumers = [];
     // Consumer groups that have not finished their first join yet. See healthy().
     this.waitingToJoin = new Set();
+    this.closing = false;
+    this.retryDelayMs = 1000;
     this.maxRetries = maxRetries;
     this.connected = false;
   }
@@ -56,6 +62,27 @@ export class KafkaBus {
     const consumer = this.kafka.consumer({ groupId, sessionTimeout: 30_000 });
     this.waitingToJoin.add(consumer);
     consumer.on(consumer.events.GROUP_JOIN, () => this.waitingToJoin.delete(consumer));
+    this.consumers.push(consumer);
+
+    // Services start in any order, so Kafka may not be accepting connections
+    // yet. Keep retrying instead of giving up: a service that runs with no
+    // consumer would look healthy while silently dropping its events.
+    for (let attempt = 1; !this.closing; attempt += 1) {
+      try {
+        await this.startConsumer(consumer, topic, handler, { groupId, types, fromBeginning });
+        break;
+      } catch (err) {
+        const waitMs = Math.min(this.retryDelayMs * attempt, 10_000);
+        log.warn({ topic, groupId, attempt, err: err.message }, `consumer start failed, retrying in ${waitMs} ms`);
+        await consumer.disconnect().catch(() => {});
+        await sleep(waitMs);
+      }
+    }
+
+    return { unsubscribe: () => consumer.disconnect() };
+  }
+
+  async startConsumer(consumer, topic, handler, { groupId, types, fromBeginning }) {
     await consumer.connect();
     await consumer.subscribe({ topic, fromBeginning });
 
@@ -90,9 +117,6 @@ export class KafkaBus {
         }
       }
     });
-
-    this.consumers.push(consumer);
-    return { unsubscribe: () => consumer.disconnect() };
   }
 
   async drain() {
@@ -119,6 +143,7 @@ export class KafkaBus {
   }
 
   async close() {
+    this.closing = true;
     await Promise.all(this.consumers.map((c) => c.disconnect().catch(() => {})));
     if (this.connected) await this.producer.disconnect().catch(() => {});
     this.connected = false;

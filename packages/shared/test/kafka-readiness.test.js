@@ -38,3 +38,26 @@ test('not ready until every consumer group has joined', async () => {
   bus.kafka.consumers[1].emit('consumer.group_join');
   assert.equal(await bus.healthy(), true);
 });
+
+test('a consumer that cannot reach Kafka keeps retrying until it can', async () => {
+  const bus = new KafkaBus({ brokers: ['unused:9092'], clientId: 'test' });
+  bus.kafka = fakeKafka();
+  bus.retryDelayMs = 1;
+
+  let attempts = 0;
+  const realConsumer = bus.kafka.consumer.bind(bus.kafka);
+  bus.kafka.consumer = () => {
+    const c = realConsumer();
+    c.connect = async () => {
+      attempts += 1;
+      if (attempts < 3) throw new Error('Connection refused');
+    };
+    return c;
+  };
+
+  await bus.subscribe('billing.commands', async () => {}, { groupId: 'billing' });
+  assert.equal(attempts, 3, 'gave up instead of retrying');
+
+  bus.kafka.consumers[0].emit('consumer.group_join');
+  assert.equal(await bus.healthy(), true);
+});
