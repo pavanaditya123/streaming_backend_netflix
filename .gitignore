@@ -18,3 +18,9 @@ test-results/
 
 # Real Kubernetes secrets, never committed
 k8s/secrets.env
+
+# Terraform local state and your own variable values
+.terraform/
+*.tfstate
+*.tfstate.backup
+terraform.tfvars

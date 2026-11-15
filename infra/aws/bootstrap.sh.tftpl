@@ -1,0 +1,26 @@
+#!/bin/bash
+# Runs once, as root, on first boot. Log: /var/log/cloud-init-output.log
+set -euo pipefail
+
+# 1. Single-node Kubernetes. k3s ships kubectl, a storage class and metrics-server.
+curl -sfL https://get.k3s.io | sh -
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+until kubectl get nodes | grep -q " Ready"; do sleep 5; done
+
+# 2. Get the manifests.
+apt-get update -y && apt-get install -y git
+git clone --depth 1 "${repo_url}" /opt/streaming
+cd /opt/streaming
+
+# 3. Random secrets generated on the machine, so they never sit in Terraform state or git.
+DB_PASSWORD=$(openssl rand -hex 16)
+cat > k8s/secrets.env <<SECRETS
+POSTGRES_PASSWORD=$DB_PASSWORD
+DATABASE_URL=postgres://streaming:$DB_PASSWORD@postgres:5432/streaming
+JWT_SECRET=$(openssl rand -hex 32)
+INTERNAL_SECRET=$(openssl rand -hex 32)
+SECRETS
+chmod 600 k8s/secrets.env
+
+# 4. Deploy.
+kubectl apply -k k8s/
