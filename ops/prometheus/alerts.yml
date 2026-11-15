@@ -1,0 +1,79 @@
+# Alert rules. Each alert links to a runbook in docs/runbooks so whoever is
+# on call knows what to check first.
+#
+# Test them without running anything:
+#   promtool check rules ops/prometheus/alerts.yml
+#   promtool test rules ops/prometheus/alerts.test.yml
+
+groups:
+  - name: streaming-availability
+    rules:
+      - alert: ServiceDown
+        expr: up{job="streaming-services"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: '{{ $labels.service }} is not answering /metrics'
+          description: 'Prometheus could not scrape {{ $labels.service }} for over 1 minute.'
+          runbook_url: docs/runbooks/service-down.md
+
+      - alert: HighErrorRate
+        # Share of requests that returned a 5xx, per service, over 5 minutes.
+        expr: |
+          sum by (service) (rate(http_requests_total{status=~"5.."}[5m]))
+            /
+          sum by (service) (rate(http_requests_total[5m]))
+            > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: '{{ $labels.service }} is failing {{ $value | humanizePercentage }} of requests'
+          description: 'More than 5% of requests returned a 5xx for 5 minutes.'
+          runbook_url: docs/runbooks/high-error-rate.md
+
+  - name: streaming-latency
+    rules:
+      - alert: HighLatencyP95
+        # Health checks and scrapes are excluded, they are not user traffic.
+        expr: |
+          histogram_quantile(0.95,
+            sum by (service, le) (
+              rate(http_request_duration_ms_bucket{route!~"/metrics|/health.*"}[5m])
+            )
+          ) > 500
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: '{{ $labels.service }} p95 latency is {{ $value }} ms'
+          description: 'p95 latency has been above 500 ms for 10 minutes.'
+          runbook_url: docs/runbooks/high-latency.md
+
+  - name: streaming-events
+    rules:
+      - alert: EventHandlerFailures
+        expr: sum by (service, topic) (increase(events_failed_total[10m])) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Kafka consumers in {{ $labels.service }} are failing on {{ $labels.topic }}'
+          description: 'Event handlers threw errors in the last 10 minutes.'
+          runbook_url: docs/runbooks/event-handler-failures.md
+
+      - alert: SubscribeSagaFailing
+        # Share of subscribe sagas that ended FAILED instead of COMPLETED.
+        expr: |
+          sum (increase(saga_completed_total{outcome="FAILED"}[15m]))
+            /
+          sum (increase(saga_completed_total[15m]))
+            > 0.2
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: '{{ $value | humanizePercentage }} of subscriptions are failing'
+          description: 'More than 20% of subscribe sagas failed in the last 15 minutes.'
+          runbook_url: docs/runbooks/saga-failures.md

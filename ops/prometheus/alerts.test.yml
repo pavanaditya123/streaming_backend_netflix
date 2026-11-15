@@ -1,0 +1,80 @@
+# Unit tests for alerts.yml. Each test feeds fake time series into the rules
+# and checks which alerts fire. Run with:
+#   promtool test rules ops/prometheus/alerts.test.yml
+
+rule_files:
+  - alerts.yml
+
+evaluation_interval: 1m
+
+tests:
+  - name: a service that stops answering pages after 1 minute
+    interval: 1m
+    input_series:
+      - series: 'up{job="streaming-services", service="billing-service"}'
+        values: '1 1 0 0 0 0'
+    alert_rule_test:
+      - eval_time: 2m
+        alertname: ServiceDown
+        exp_alerts: []
+      - eval_time: 4m
+        alertname: ServiceDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: streaming-services
+              service: billing-service
+            exp_annotations:
+              summary: 'billing-service is not answering /metrics'
+              description: 'Prometheus could not scrape billing-service for over 1 minute.'
+              runbook_url: docs/runbooks/service-down.md
+
+  - name: 10% of requests failing raises HighErrorRate
+    interval: 1m
+    input_series:
+      # 100 requests a minute, 10 of them 5xx.
+      - series: 'http_requests_total{service="playback-service", status="200"}'
+        values: '0+90x20'
+      - series: 'http_requests_total{service="playback-service", status="503"}'
+        values: '0+10x20'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: HighErrorRate
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              service: playback-service
+            exp_annotations:
+              summary: 'playback-service is failing 10% of requests'
+              description: 'More than 5% of requests returned a 5xx for 5 minutes.'
+              runbook_url: docs/runbooks/high-error-rate.md
+
+  - name: 1% errors is normal noise and stays quiet
+    interval: 1m
+    input_series:
+      - series: 'http_requests_total{service="catalog-service", status="200"}'
+        values: '0+99x20'
+      - series: 'http_requests_total{service="catalog-service", status="500"}'
+        values: '0+1x20'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: HighErrorRate
+        exp_alerts: []
+
+  - name: half of subscribe sagas failing raises SubscribeSagaFailing
+    interval: 1m
+    input_series:
+      - series: 'saga_completed_total{saga="SUBSCRIBE", outcome="COMPLETED"}'
+        values: '0+2x40'
+      - series: 'saga_completed_total{saga="SUBSCRIBE", outcome="FAILED"}'
+        values: '0+2x40'
+    alert_rule_test:
+      - eval_time: 35m
+        alertname: SubscribeSagaFailing
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: '50% of subscriptions are failing'
+              description: 'More than 20% of subscribe sagas failed in the last 15 minutes.'
+              runbook_url: docs/runbooks/saga-failures.md

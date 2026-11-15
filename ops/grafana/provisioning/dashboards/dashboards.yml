@@ -1,0 +1,8 @@
+apiVersion: 1
+
+providers:
+  - name: streaming
+    folder: Streaming Platform
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards
