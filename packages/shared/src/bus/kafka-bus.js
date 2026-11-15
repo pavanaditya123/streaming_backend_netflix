@@ -13,6 +13,8 @@ export class KafkaBus {
     this.kafka = new Kafka({ clientId, brokers, logLevel: logLevel.ERROR, retry: { retries: 5 } });
     this.producer = this.kafka.producer({ allowAutoTopicCreation: true, idempotent: true });
     this.consumers = [];
+    // Consumer groups that have not finished their first join yet. See healthy().
+    this.waitingToJoin = new Set();
     this.maxRetries = maxRetries;
     this.connected = false;
   }
@@ -52,6 +54,8 @@ export class KafkaBus {
 
   async subscribe(topic, handler, { groupId = 'default', types = null, fromBeginning = false } = {}) {
     const consumer = this.kafka.consumer({ groupId, sessionTimeout: 30_000 });
+    this.waitingToJoin.add(consumer);
+    consumer.on(consumer.events.GROUP_JOIN, () => this.waitingToJoin.delete(consumer));
     await consumer.connect();
     await consumer.subscribe({ topic, fromBeginning });
 
@@ -96,6 +100,12 @@ export class KafkaBus {
   }
 
   async healthy() {
+    // A brand-new consumer group starts reading at the latest offset, so any
+    // event published before it joins is skipped. Stay "not ready" until every
+    // consumer has joined; Kubernetes then holds traffic back until this pod
+    // can actually receive the events that traffic produces.
+    if (this.waitingToJoin.size > 0) return false;
+
     const admin = this.kafka.admin();
     try {
       await admin.connect();
