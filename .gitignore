@@ -15,3 +15,6 @@ test-results/
 
 # Editor lock files
 .~lock.*
+
+# Real Kubernetes secrets, never committed
+k8s/secrets.env

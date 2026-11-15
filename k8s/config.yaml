@@ -1,0 +1,22 @@
+# Shared, non-secret settings for every service. Same values as the
+# docker compose file, but pointing at Kubernetes service names.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: streaming-config
+data:
+  NODE_ENV: production
+  LOG_LEVEL: info
+  DATA_DRIVER: postgres
+  CACHE_DRIVER: redis
+  BUS_DRIVER: kafka
+  REDIS_URL: redis://redis:6379
+  KAFKA_BROKERS: kafka:9092
+  USER_SERVICE_URL: http://user-service:3001
+  CATALOG_SERVICE_URL: http://catalog-service:3002
+  PLAYBACK_SERVICE_URL: http://playback-service:3003
+  WATCH_HISTORY_SERVICE_URL: http://watch-history-service:3004
+  SUBSCRIPTION_SERVICE_URL: http://subscription-service:3005
+  BILLING_SERVICE_URL: http://billing-service:3006
+  NOTIFICATION_SERVICE_URL: http://notification-service:3007
+  RECOMMENDATION_SERVICE_URL: http://recommendation-service:3008

@@ -1,0 +1,24 @@
+# Deploy everything with:
+#   cp k8s/secrets.env.example k8s/secrets.env   # then edit the values
+#   kubectl apply -k k8s/
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: streaming
+
+resources:
+  - namespace.yaml
+  - config.yaml
+  - infra.yaml
+  - migrate-job.yaml
+  - services.yaml
+  - hpa.yaml
+
+secretGenerator:
+  - name: streaming-secrets
+    envs: [secrets.env]
+
+# CI builds and pushes this image; override the tag per environment.
+images:
+  - name: streaming-backend
+    newName: ghcr.io/pavanaditya123/streaming-backend
+    newTag: latest

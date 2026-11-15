@@ -1,0 +1,18 @@
+# One-shot schema migration + catalog seed, the same command the compose
+# file runs. The Job retries until Postgres is accepting connections.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate
+spec:
+  backoffLimit: 10
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: streaming-backend
+          command: ['sh', '-c', 'node scripts/migrate.js && node scripts/seed.js --titles=2000']
+          envFrom:
+            - configMapRef: { name: streaming-config }
+            - secretRef: { name: streaming-secrets }

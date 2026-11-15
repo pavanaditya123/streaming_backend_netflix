@@ -1,0 +1,415 @@
+# The nine application services. They all run the same image; SERVICE_PATH
+# picks which server.js starts, exactly like docker-compose.yml.
+#
+# Every pod gets:
+#   - liveness  /health        -> restart the container if the process hangs
+#   - readiness /health/ready  -> only send traffic once Postgres/Redis/Kafka are reachable
+#   - prometheus.io/* annotations so Prometheus finds /metrics on its own
+#   - CPU/memory requests (for scheduling and the HPA) and a memory limit
+---
+# The only service reachable from outside the cluster.
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+spec:
+  type: NodePort
+  selector: { app: api-gateway }
+  ports:
+    - port: 3000
+      nodePort: 30080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: api-gateway }
+  template:
+    metadata:
+      labels: { app: api-gateway }
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3000'
+    spec:
+      containers:
+        - name: api-gateway
+          image: streaming-backend
+          env:
+            - { name: SERVICE_PATH, value: services/api-gateway/src/server.js }
+          envFrom:
+            - configMapRef: { name: streaming-config }
+            - secretRef: { name: streaming-secrets }
+          ports: [{ containerPort: 3000 }]
+          livenessProbe:
+            httpGet: { path: /health, port: 3000 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 3000 }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 96Mi }
+            limits: { memory: 256Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  type: ClusterIP
+  selector: { app: user-service }
+  ports:
+    - port: 3001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: user-service }
+  template:
+    metadata:
+      labels: { app: user-service }
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3001'
+    spec:
+      containers:
+        - name: user-service
+          image: streaming-backend
+          env:
+            - { name: SERVICE_PATH, value: services/user-service/src/server.js }
+          envFrom:
+            - configMapRef: { name: streaming-config }
+            - secretRef: { name: streaming-secrets }
+          ports: [{ containerPort: 3001 }]
+          livenessProbe:
+            httpGet: { path: /health, port: 3001 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 3001 }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 96Mi }
+            limits: { memory: 256Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-service
+spec:
+  type: ClusterIP
+  selector: { app: catalog-service }
+  ports:
+    - port: 3002
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: catalog-service }
+  template:
+    metadata:
+      labels: { app: catalog-service }
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3002'
+    spec:
+      containers:
+        - name: catalog-service
+          image: streaming-backend
+          env:
+            - { name: SERVICE_PATH, value: services/catalog-service/src/server.js }
+          envFrom:
+            - configMapRef: { name: streaming-config }
+            - secretRef: { name: streaming-secrets }
+          ports: [{ containerPort: 3002 }]
+          livenessProbe:
+            httpGet: { path: /health, port: 3002 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 3002 }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 96Mi }
+            limits: { memory: 256Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: playback-service
+spec:
+  type: ClusterIP
+  selector: { app: playback-service }
+  ports:
+    - port: 3003
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: playback-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: playback-service }
+  template:
+    metadata:
+      labels: { app: playback-service }
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3003'
+    spec:
+      containers:
+        - name: playback-service
+          image: streaming-backend
+          env:
+            - { name: SERVICE_PATH, value: services/playback-service/src/server.js }
+          envFrom:
+            - configMapRef: { name: streaming-config }
+            - secretRef: { name: streaming-secrets }
+          ports: [{ containerPort: 3003 }]
+          livenessProbe:
+            httpGet: { path: /health, port: 3003 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 3003 }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 96Mi }
+            limits: { memory: 256Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: watch-history-service
+spec:
+  type: ClusterIP
+  selector: { app: watch-history-service }
+  ports:
+    - port: 3004
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watch-history-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: watch-history-service }
+  template:
+    metadata:
+      labels: { app: watch-history-service }
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3004'
+    spec:
+      containers:
+        - name: watch-history-service
+          image: streaming-backend
+          env:
+            - { name: SERVICE_PATH, value: services/watch-history-service/src/server.js }
+          envFrom:
+            - configMapRef: { name: streaming-config }
+            - secretRef: { name: streaming-secrets }
+          ports: [{ containerPort: 3004 }]
+          livenessProbe:
+            httpGet: { path: /health, port: 3004 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 3004 }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 96Mi }
+            limits: { memory: 256Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: subscription-service
+spec:
+  type: ClusterIP
+  selector: { app: subscription-service }
+  ports:
+    - port: 3005
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subscription-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: subscription-service }
+  template:
+    metadata:
+      labels: { app: subscription-service }
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3005'
+    spec:
+      containers:
+        - name: subscription-service
+          image: streaming-backend
+          env:
+            - { name: SERVICE_PATH, value: services/subscription-service/src/server.js }
+          envFrom:
+            - configMapRef: { name: streaming-config }
+            - secretRef: { name: streaming-secrets }
+          ports: [{ containerPort: 3005 }]
+          livenessProbe:
+            httpGet: { path: /health, port: 3005 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 3005 }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 96Mi }
+            limits: { memory: 256Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing-service
+spec:
+  type: ClusterIP
+  selector: { app: billing-service }
+  ports:
+    - port: 3006
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: billing-service }
+  template:
+    metadata:
+      labels: { app: billing-service }
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3006'
+    spec:
+      containers:
+        - name: billing-service
+          image: streaming-backend
+          env:
+            - { name: SERVICE_PATH, value: services/billing-service/src/server.js }
+          envFrom:
+            - configMapRef: { name: streaming-config }
+            - secretRef: { name: streaming-secrets }
+          ports: [{ containerPort: 3006 }]
+          livenessProbe:
+            httpGet: { path: /health, port: 3006 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 3006 }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 96Mi }
+            limits: { memory: 256Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+spec:
+  type: ClusterIP
+  selector: { app: notification-service }
+  ports:
+    - port: 3007
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: notification-service }
+  template:
+    metadata:
+      labels: { app: notification-service }
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3007'
+    spec:
+      containers:
+        - name: notification-service
+          image: streaming-backend
+          env:
+            - { name: SERVICE_PATH, value: services/notification-service/src/server.js }
+          envFrom:
+            - configMapRef: { name: streaming-config }
+            - secretRef: { name: streaming-secrets }
+          ports: [{ containerPort: 3007 }]
+          livenessProbe:
+            httpGet: { path: /health, port: 3007 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 3007 }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 96Mi }
+            limits: { memory: 256Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: recommendation-service
+spec:
+  type: ClusterIP
+  selector: { app: recommendation-service }
+  ports:
+    - port: 3008
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recommendation-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: recommendation-service }
+  template:
+    metadata:
+      labels: { app: recommendation-service }
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '3008'
+    spec:
+      containers:
+        - name: recommendation-service
+          image: streaming-backend
+          env:
+            - { name: SERVICE_PATH, value: services/recommendation-service/src/server.js }
+          envFrom:
+            - configMapRef: { name: streaming-config }
+            - secretRef: { name: streaming-secrets }
+          ports: [{ containerPort: 3008 }]
+          livenessProbe:
+            httpGet: { path: /health, port: 3008 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 3008 }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 96Mi }
+            limits: { memory: 256Mi }
