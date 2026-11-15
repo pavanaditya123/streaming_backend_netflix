@@ -12,3 +12,6 @@ interview-prep/
 
 playwright-report/
 test-results/
+
+# Editor lock files
+.~lock.*
