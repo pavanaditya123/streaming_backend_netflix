@@ -54,6 +54,7 @@ The frontend is served by the gateway with no separate build or dependencies. Pa
 ```bash
 docker compose up --build     # Postgres + Redis + Kafka + 9 service containers
 npm run smoke
+docker compose --profile observability up   # adds Prometheus, Alertmanager, Grafana
 ```
 
 The only difference between the two is three environment variables. See
@@ -284,6 +285,58 @@ Errors are uniform:
 
 ---
 
+## Operations: monitoring, alerts, Kubernetes, AWS
+
+The services were already instrumented (`/health`, `/health/ready`,
+`/metrics` from the shared app factory). This part is about running them.
+
+| What | Where | How to run or check it |
+|---|---|---|
+| Prometheus, Alertmanager, Grafana | `ops/` | `docker compose --profile observability up` then Grafana on :3100 |
+| 5 alert rules + unit tests | `ops/prometheus/alerts.yml` | `promtool test rules ops/prometheus/alerts.test.yml` |
+| A runbook per alert | `docs/runbooks/` | linked from each alert's `runbook_url` |
+| Kubernetes manifests | `k8s/` | `kubectl apply -k k8s/` (copy `secrets.env.example` first) |
+| AWS infrastructure | `infra/aws/` | `terraform apply` (see below) |
+| CI | `.github/workflows/ci.yml` | deploys `k8s/` to a kind cluster and runs the smoke test on every push |
+
+**Alerts.** Service down, 5xx rate above 5%, p95 latency above 500 ms,
+Kafka consumer failures, and subscribe sagas failing above 20%. Alertmanager
+groups them by alert and service, mutes warnings from a service that is
+already down, and sends them to
+[aiops-incident-triage](https://github.com/pavanaditya123/aiops-incident-triage),
+which opens a ticket with a priority and the runbook attached.
+
+**Kubernetes.** One image for all nine services (`SERVICE_PATH` picks the
+server). Every Deployment has a liveness probe on `/health`, a readiness probe
+on `/health/ready` (so a pod only gets traffic once Postgres, Redis and Kafka
+answer), CPU and memory requests, and a memory limit. The gateway and catalog
+scale on CPU with an HPA. Postgres, Redis and Kafka run in-cluster as single
+replicas, which is fine for a demo box. In production they would be RDS,
+ElastiCache and MSK.
+
+**AWS.** `infra/aws` creates a VPC, one public subnet and a t3.medium in
+Mumbai running k3s. On first boot the instance clones this repo, generates
+random secrets locally (they never touch git or Terraform state) and runs
+`kubectl apply -k k8s/`. Security choices:
+
+- the only open port is the gateway NodePort, and only to your IP (`allowed_cidr`)
+- no SSH key and no port 22: shell access is `aws ssm start-session` through IAM
+- instance metadata requires IMDSv2 tokens; the root volume is encrypted
+
+```bash
+cd infra/aws
+cp terraform.tfvars.example terraform.tfvars   # put your IP in it
+terraform init && terraform apply
+# ...try it, then tear it down: a t3.medium is not free
+terraform destroy
+```
+
+The first push to main publishes `ghcr.io/pavanaditya123/streaming-backend`.
+GHCR packages start private: make it public once (package settings) so the
+instance can pull it.
+
+---
+
 ## Documentation
 
 | Doc | What is in it |
@@ -294,6 +347,7 @@ Errors are uniform:
 | [CACHING.md](docs/CACHING.md) | Every cache key, TTL and invalidation trigger |
 | [EVENTS.md](docs/EVENTS.md) | Topics, event schemas, consumer groups, idempotency |
 | [RECOMMENDATIONS.md](docs/RECOMMENDATIONS.md) | All 26 intents and how parsing works |
+| [runbooks/](docs/runbooks/) | What to check and do for each alert |
 | [INTERVIEW-GUIDE.md](docs/INTERVIEW-GUIDE.md) | The questions this design invites, and honest answers |
 | [legacy-monolith/](legacy-monolith/) | The "before", annotated |
 
@@ -315,6 +369,9 @@ services/<name>/
   test/
 db/migrations/            numbered .sql, with comments on every index
 scripts/                  dev-all · migrate · seed · smoke · bench · wait-for
+ops/                      Prometheus rules + tests, Alertmanager, Grafana dashboard
+k8s/                      kustomize manifests for the whole platform
+infra/aws/                Terraform: VPC, security group, IAM role, k3s instance
 ```
 
 The consistent shape per service is deliberate: `domain/` is where the thinking

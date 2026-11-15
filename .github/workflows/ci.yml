@@ -210,3 +210,122 @@ jobs:
             sleep 2
           done
           echo "gateway never became healthy"; docker logs gw; exit 1
+
+  # ===========================================================================
+  # 5. Ops config: alert rules, Kubernetes manifests and Terraform are code
+  #    too, so they get checked on every push like the rest.
+  # ===========================================================================
+  ops-checks:
+    name: Alert rules, manifests, Terraform
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Alert rules are valid and their unit tests pass
+        run: |
+          docker run --rm -v "$PWD/ops/prometheus:/rules" -w /rules --entrypoint promtool \
+            prom/prometheus:v2.55.1 check rules alerts.yml
+          docker run --rm -v "$PWD/ops/prometheus:/rules" -w /rules --entrypoint promtool \
+            prom/prometheus:v2.55.1 test rules alerts.test.yml
+
+      - name: Kubernetes manifests match the API schema
+        run: |
+          cp k8s/secrets.env.example k8s/secrets.env
+          kubectl kustomize k8s > rendered.yaml
+          docker run --rm -v "$PWD:/work" ghcr.io/yannh/kubeconform:v0.6.7 \
+            -strict -summary /work/rendered.yaml
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform is formatted and valid
+        working-directory: infra/aws
+        run: |
+          terraform fmt -check -diff
+          terraform init -backend=false -input=false
+          terraform validate
+
+  # ===========================================================================
+  # 6. Deploy the real manifests to a throwaway Kubernetes cluster (kind),
+  #    wait for every pod to become ready, then run the same smoke test
+  #    against it. If the YAML deploys here, it deploys on the AWS box.
+  # ===========================================================================
+  kubernetes:
+    name: Deploy to kind and smoke test
+    runs-on: ubuntu-latest
+    needs: [test, docker]
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - uses: helm/kind-action@v1
+        with:
+          cluster_name: streaming
+
+      - name: Build the image and load it into kind
+        run: |
+          docker build -t streaming-backend:ci .
+          kind load docker-image streaming-backend:ci --name streaming
+
+      - name: Point the manifests at the local image and deploy
+        run: |
+          sed -i 's|newName: .*|newName: streaming-backend|; s|newTag: .*|newTag: ci|' k8s/kustomization.yaml
+          cp k8s/secrets.env.example k8s/secrets.env
+          kubectl apply -k k8s
+
+      - name: Wait for infra, migrations, then every service
+        run: |
+          kubectl -n streaming rollout status statefulset/postgres --timeout=180s
+          kubectl -n streaming rollout status statefulset/kafka --timeout=300s
+          kubectl -n streaming wait --for=condition=complete job/migrate --timeout=300s
+          for d in $(kubectl -n streaming get deploy -o name); do
+            kubectl -n streaming rollout status "$d" --timeout=300s
+          done
+
+      - name: Smoke test through the gateway
+        run: |
+          kubectl -n streaming port-forward svc/api-gateway 3000:3000 > /tmp/pf.log 2>&1 &
+          node scripts/wait-for.js http://localhost:3000/ops/services --timeout=60000
+          npm run smoke
+
+      - name: Cluster state on failure
+        if: failure()
+        run: |
+          kubectl -n streaming get pods -o wide
+          kubectl -n streaming describe pods | tail -80
+          kubectl -n streaming logs job/migrate --tail=50 || true
+          kubectl -n streaming logs statefulset/kafka --tail=50 || true
+
+  # ===========================================================================
+  # 7. On main only: publish the image the Kubernetes manifests deploy.
+  # ===========================================================================
+  publish:
+    name: Publish image to GHCR
+    runs-on: ubuntu-latest
+    needs: [kubernetes, integration, ops-checks]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/streaming-backend:latest
+            ghcr.io/${{ github.repository_owner }}/streaming-backend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
