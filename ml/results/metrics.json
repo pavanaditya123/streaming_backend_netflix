@@ -1,0 +1,383 @@
+{
+  "data": {
+    "raw_ratings": 100836,
+    "raw_users": 610,
+    "raw_movies": 9742,
+    "duplicate_ratings_dropped": 0,
+    "positive_interactions": 48580,
+    "users_dropped_too_few_positives": 30,
+    "users": 579,
+    "items_with_positives": 6296,
+    "interactions": 48395,
+    "density_pct": 0.858
+  },
+  "split": {
+    "train": 33878,
+    "val": 4846,
+    "test": 9671,
+    "protocol": "per-user temporal 70/10/20"
+  },
+  "k": 10,
+  "models": {
+    "popularity": {
+      "params": {},
+      "val": {
+        "precision@10": 0.0337,
+        "recall@10": 0.07,
+        "ndcg@10": 0.0589,
+        "hit_rate@10": 0.2401,
+        "users_evaluated": 579,
+        "coverage@10": 0.0055
+      },
+      "test": {
+        "precision@10": 0.0491,
+        "recall@10": 0.0481,
+        "ndcg@10": 0.0651,
+        "hit_rate@10": 0.3143,
+        "users_evaluated": 579,
+        "coverage@10": 0.0056
+      },
+      "trials": [
+        {
+          "params": {},
+          "precision@10": 0.0337,
+          "recall@10": 0.07,
+          "ndcg@10": 0.0589,
+          "hit_rate@10": 0.2401,
+          "users_evaluated": 579,
+          "coverage@10": 0.0055
+        }
+      ]
+    },
+    "item_knn": {
+      "params": {
+        "k": 25,
+        "shrink": 10
+      },
+      "val": {
+        "precision@10": 0.0516,
+        "recall@10": 0.1073,
+        "ndcg@10": 0.086,
+        "hit_rate@10": 0.3575,
+        "users_evaluated": 579,
+        "coverage@10": 0.0587
+      },
+      "test": {
+        "precision@10": 0.075,
+        "recall@10": 0.0775,
+        "ndcg@10": 0.0957,
+        "hit_rate@10": 0.4473,
+        "users_evaluated": 579,
+        "coverage@10": 0.06
+      },
+      "trials": [
+        {
+          "params": {
+            "k": 25,
+            "shrink": 0
+          },
+          "precision@10": 0.0472,
+          "recall@10": 0.0947,
+          "ndcg@10": 0.0815,
+          "hit_rate@10": 0.3316,
+          "users_evaluated": 579,
+          "coverage@10": 0.073
+        },
+        {
+          "params": {
+            "k": 25,
+            "shrink": 10
+          },
+          "precision@10": 0.0516,
+          "recall@10": 0.1073,
+          "ndcg@10": 0.086,
+          "hit_rate@10": 0.3575,
+          "users_evaluated": 579,
+          "coverage@10": 0.0587
+        },
+        {
+          "params": {
+            "k": 25,
+            "shrink": 50
+          },
+          "precision@10": 0.0492,
+          "recall@10": 0.1011,
+          "ndcg@10": 0.0836,
+          "hit_rate@10": 0.3454,
+          "users_evaluated": 579,
+          "coverage@10": 0.045
+        },
+        {
+          "params": {
+            "k": 50,
+            "shrink": 0
+          },
+          "precision@10": 0.0449,
+          "recall@10": 0.082,
+          "ndcg@10": 0.0733,
+          "hit_rate@10": 0.3126,
+          "users_evaluated": 579,
+          "coverage@10": 0.0687
+        },
+        {
+          "params": {
+            "k": 50,
+            "shrink": 10
+          },
+          "precision@10": 0.0496,
+          "recall@10": 0.0972,
+          "ndcg@10": 0.0808,
+          "hit_rate@10": 0.3437,
+          "users_evaluated": 579,
+          "coverage@10": 0.0573
+        },
+        {
+          "params": {
+            "k": 50,
+            "shrink": 50
+          },
+          "precision@10": 0.0494,
+          "recall@10": 0.1004,
+          "ndcg@10": 0.0859,
+          "hit_rate@10": 0.3282,
+          "users_evaluated": 579,
+          "coverage@10": 0.0397
+        },
+        {
+          "params": {
+            "k": 100,
+            "shrink": 0
+          },
+          "precision@10": 0.0472,
+          "recall@10": 0.0906,
+          "ndcg@10": 0.0767,
+          "hit_rate@10": 0.3178,
+          "users_evaluated": 579,
+          "coverage@10": 0.0705
+        },
+        {
+          "params": {
+            "k": 100,
+            "shrink": 10
+          },
+          "precision@10": 0.0494,
+          "recall@10": 0.0983,
+          "ndcg@10": 0.0824,
+          "hit_rate@10": 0.3212,
+          "users_evaluated": 579,
+          "coverage@10": 0.0521
+        },
+        {
+          "params": {
+            "k": 100,
+            "shrink": 50
+          },
+          "precision@10": 0.048,
+          "recall@10": 0.0951,
+          "ndcg@10": 0.0843,
+          "hit_rate@10": 0.3161,
+          "users_evaluated": 579,
+          "coverage@10": 0.0343
+        },
+        {
+          "params": {
+            "k": 200,
+            "shrink": 0
+          },
+          "precision@10": 0.0463,
+          "recall@10": 0.093,
+          "ndcg@10": 0.0773,
+          "hit_rate@10": 0.3109,
+          "users_evaluated": 579,
+          "coverage@10": 0.0715
+        },
+        {
+          "params": {
+            "k": 200,
+            "shrink": 10
+          },
+          "precision@10": 0.0468,
+          "recall@10": 0.0954,
+          "ndcg@10": 0.078,
+          "hit_rate@10": 0.3161,
+          "users_evaluated": 579,
+          "coverage@10": 0.0444
+        },
+        {
+          "params": {
+            "k": 200,
+            "shrink": 50
+          },
+          "precision@10": 0.0458,
+          "recall@10": 0.0912,
+          "ndcg@10": 0.0795,
+          "hit_rate@10": 0.3074,
+          "users_evaluated": 579,
+          "coverage@10": 0.0285
+        }
+      ]
+    },
+    "pure_svd": {
+      "params": {
+        "n_factors": 32
+      },
+      "val": {
+        "precision@10": 0.0477,
+        "recall@10": 0.0962,
+        "ndcg@10": 0.0812,
+        "hit_rate@10": 0.3385,
+        "users_evaluated": 579,
+        "coverage@10": 0.0411
+      },
+      "test": {
+        "precision@10": 0.0807,
+        "recall@10": 0.0879,
+        "ndcg@10": 0.1045,
+        "hit_rate@10": 0.468,
+        "users_evaluated": 579,
+        "coverage@10": 0.042
+      },
+      "trials": [
+        {
+          "params": {
+            "n_factors": 16
+          },
+          "precision@10": 0.048,
+          "recall@10": 0.0907,
+          "ndcg@10": 0.0789,
+          "hit_rate@10": 0.3264,
+          "users_evaluated": 579,
+          "coverage@10": 0.0315
+        },
+        {
+          "params": {
+            "n_factors": 32
+          },
+          "precision@10": 0.0477,
+          "recall@10": 0.0962,
+          "ndcg@10": 0.0812,
+          "hit_rate@10": 0.3385,
+          "users_evaluated": 579,
+          "coverage@10": 0.0411
+        },
+        {
+          "params": {
+            "n_factors": 64
+          },
+          "precision@10": 0.0415,
+          "recall@10": 0.0842,
+          "ndcg@10": 0.0702,
+          "hit_rate@10": 0.3109,
+          "users_evaluated": 579,
+          "coverage@10": 0.0555
+        },
+        {
+          "params": {
+            "n_factors": 128
+          },
+          "precision@10": 0.0332,
+          "recall@10": 0.081,
+          "ndcg@10": 0.0615,
+          "hit_rate@10": 0.2815,
+          "users_evaluated": 579,
+          "coverage@10": 0.0721
+        },
+        {
+          "params": {
+            "n_factors": 256
+          },
+          "precision@10": 0.0221,
+          "recall@10": 0.061,
+          "ndcg@10": 0.043,
+          "hit_rate@10": 0.1917,
+          "users_evaluated": 579,
+          "coverage@10": 0.1075
+        }
+      ]
+    },
+    "content_tfidf": {
+      "params": {
+        "genre_weight": 1
+      },
+      "val": {
+        "precision@10": 0.0043,
+        "recall@10": 0.0103,
+        "ndcg@10": 0.0077,
+        "hit_rate@10": 0.0397,
+        "users_evaluated": 579,
+        "coverage@10": 0.1988
+      },
+      "test": {
+        "precision@10": 0.0085,
+        "recall@10": 0.0079,
+        "ndcg@10": 0.0098,
+        "hit_rate@10": 0.0777,
+        "users_evaluated": 579,
+        "coverage@10": 0.2023
+      },
+      "trials": [
+        {
+          "params": {
+            "genre_weight": 1
+          },
+          "precision@10": 0.0043,
+          "recall@10": 0.0103,
+          "ndcg@10": 0.0077,
+          "hit_rate@10": 0.0397,
+          "users_evaluated": 579,
+          "coverage@10": 0.1988
+        },
+        {
+          "params": {
+            "genre_weight": 2
+          },
+          "precision@10": 0.0038,
+          "recall@10": 0.0091,
+          "ndcg@10": 0.0064,
+          "hit_rate@10": 0.038,
+          "users_evaluated": 579,
+          "coverage@10": 0.1737
+        },
+        {
+          "params": {
+            "genre_weight": 3
+          },
+          "precision@10": 0.0029,
+          "recall@10": 0.0079,
+          "ndcg@10": 0.0055,
+          "hit_rate@10": 0.0276,
+          "users_evaluated": 579,
+          "coverage@10": 0.1617
+        }
+      ]
+    },
+    "hybrid": {
+      "params": {
+        "weights": {
+          "item_knn": 0.6,
+          "pure_svd": 0.4,
+          "content_tfidf": 0.0
+        }
+      },
+      "val": {
+        "precision@10": 0.0513,
+        "recall@10": 0.1098,
+        "ndcg@10": 0.0879,
+        "hit_rate@10": 0.3523,
+        "users_evaluated": 579,
+        "coverage@10": 0.0513
+      },
+      "test": {
+        "precision@10": 0.0801,
+        "recall@10": 0.0861,
+        "ndcg@10": 0.1027,
+        "hit_rate@10": 0.4801,
+        "users_evaluated": 579,
+        "coverage@10": 0.0521
+      }
+    }
+  },
+  "best_model": "hybrid",
+  "ndcg_lift_over_popularity_pct": 57.8,
+  "runtime_seconds": 34.7
+}

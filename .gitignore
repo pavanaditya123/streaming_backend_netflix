@@ -24,3 +24,11 @@ k8s/secrets.env
 *.tfstate
 *.tfstate.backup
 terraform.tfvars
+
+# ML pipeline: downloaded dataset and local experiment tracking
+ml/data/
+ml/mlflow.db
+ml/mlruns/
+mlruns/
+__pycache__/
+.pytest_cache/

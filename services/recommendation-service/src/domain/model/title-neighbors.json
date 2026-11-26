@@ -1,0 +1,2571 @@
+{
+ "model": "content-tfidf",
+ "titles": 61,
+ "neighborsPerTitle": 10,
+ "features": "genre x2, mood, language, type, decade, director, cast, description",
+ "vocabularySize": 612,
+ "neighbors": {
+  "tt_inception": [
+   {
+    "id": "tt_matrix",
+    "score": 0.1868
+   },
+   {
+    "id": "tt_dark",
+    "score": 0.1647
+   },
+   {
+    "id": "tt_mad_max",
+    "score": 0.1556
+   },
+   {
+    "id": "tt_avengers",
+    "score": 0.1472
+   },
+   {
+    "id": "tt_arrival",
+    "score": 0.1393
+   },
+   {
+    "id": "tt_interstellar",
+    "score": 0.1386
+   },
+   {
+    "id": "tt_vikram",
+    "score": 0.1334
+   },
+   {
+    "id": "tt_stranger_things",
+    "score": 0.1316
+   },
+   {
+    "id": "tt_jurassic_park",
+    "score": 0.1306
+   },
+   {
+    "id": "tt_cowboy_bebop",
+    "score": 0.1281
+   }
+  ],
+  "tt_interstellar": [
+   {
+    "id": "tt_mad_max",
+    "score": 0.211
+   },
+   {
+    "id": "tt_avengers",
+    "score": 0.1683
+   },
+   {
+    "id": "tt_cast_away",
+    "score": 0.1619
+   },
+   {
+    "id": "tt_gladiator",
+    "score": 0.1619
+   },
+   {
+    "id": "tt_arrival",
+    "score": 0.1588
+   },
+   {
+    "id": "tt_jurassic_park",
+    "score": 0.1537
+   },
+   {
+    "id": "tt_rrr",
+    "score": 0.1424
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.1386
+   },
+   {
+    "id": "tt_dark",
+    "score": 0.136
+   },
+   {
+    "id": "tt_grand_budapest",
+    "score": 0.1261
+   }
+  ],
+  "tt_dark_knight": [
+   {
+    "id": "tt_money_heist",
+    "score": 0.193
+   },
+   {
+    "id": "tt_mirzapur",
+    "score": 0.1791
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.1744
+   },
+   {
+    "id": "tt_kgf",
+    "score": 0.1605
+   },
+   {
+    "id": "tt_vikram",
+    "score": 0.141
+   },
+   {
+    "id": "tt_goodfellas",
+    "score": 0.1374
+   },
+   {
+    "id": "tt_gladiator",
+    "score": 0.1356
+   },
+   {
+    "id": "tt_pulp_fiction",
+    "score": 0.1353
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.1261
+   },
+   {
+    "id": "tt_sacred_games",
+    "score": 0.1252
+   }
+  ],
+  "tt_parasite": [
+   {
+    "id": "tt_squid_game",
+    "score": 0.148
+   },
+   {
+    "id": "tt_get_out",
+    "score": 0.1462
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.1448
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.1302
+   },
+   {
+    "id": "tt_the_bear",
+    "score": 0.1295
+   },
+   {
+    "id": "tt_the_conjuring",
+    "score": 0.1245
+   },
+   {
+    "id": "tt_seinfeld",
+    "score": 0.1212
+   },
+   {
+    "id": "tt_sacred_games",
+    "score": 0.1208
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.1203
+   },
+   {
+    "id": "tt_barbie",
+    "score": 0.1169
+   }
+  ],
+  "tt_spirited_away": [
+   {
+    "id": "tt_soul",
+    "score": 0.3175
+   },
+   {
+    "id": "tt_coco",
+    "score": 0.3044
+   },
+   {
+    "id": "tt_up",
+    "score": 0.2447
+   },
+   {
+    "id": "tt_toy_story",
+    "score": 0.2394
+   },
+   {
+    "id": "tt_your_name",
+    "score": 0.2358
+   },
+   {
+    "id": "tt_barbie",
+    "score": 0.1432
+   },
+   {
+    "id": "tt_baahubali",
+    "score": 0.1378
+   },
+   {
+    "id": "tt_cowboy_bebop",
+    "score": 0.1331
+   },
+   {
+    "id": "tt_wednesday",
+    "score": 0.0868
+   },
+   {
+    "id": "tt_amelie",
+    "score": 0.0828
+   }
+  ],
+  "tt_3_idiots": [
+   {
+    "id": "tt_seinfeld",
+    "score": 0.1656
+   },
+   {
+    "id": "tt_panchayat",
+    "score": 0.1593
+   },
+   {
+    "id": "tt_friends",
+    "score": 0.1484
+   },
+   {
+    "id": "tt_the_office",
+    "score": 0.143
+   },
+   {
+    "id": "tt_toy_story",
+    "score": 0.1423
+   },
+   {
+    "id": "tt_grand_budapest",
+    "score": 0.1295
+   },
+   {
+    "id": "tt_dangal",
+    "score": 0.1278
+   },
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.1154
+   },
+   {
+    "id": "tt_amelie",
+    "score": 0.1091
+   },
+   {
+    "id": "tt_barbie",
+    "score": 0.108
+   }
+  ],
+  "tt_dangal": [
+   {
+    "id": "tt_12th_fail",
+    "score": 0.2078
+   },
+   {
+    "id": "tt_scam_1992",
+    "score": 0.2076
+   },
+   {
+    "id": "tt_goodfellas",
+    "score": 0.1469
+   },
+   {
+    "id": "tt_the_crown",
+    "score": 0.1363
+   },
+   {
+    "id": "tt_oppenheimer",
+    "score": 0.1334
+   },
+   {
+    "id": "tt_3_idiots",
+    "score": 0.1278
+   },
+   {
+    "id": "tt_shawshank",
+    "score": 0.0941
+   },
+   {
+    "id": "tt_whiplash",
+    "score": 0.082
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.0724
+   },
+   {
+    "id": "tt_arrival",
+    "score": 0.0707
+   }
+  ],
+  "tt_rrr": [
+   {
+    "id": "tt_baahubali",
+    "score": 0.2452
+   },
+   {
+    "id": "tt_gladiator",
+    "score": 0.2233
+   },
+   {
+    "id": "tt_mad_max",
+    "score": 0.2125
+   },
+   {
+    "id": "tt_avengers",
+    "score": 0.1697
+   },
+   {
+    "id": "tt_kgf",
+    "score": 0.1683
+   },
+   {
+    "id": "tt_interstellar",
+    "score": 0.1424
+   },
+   {
+    "id": "tt_cast_away",
+    "score": 0.1251
+   },
+   {
+    "id": "tt_vikram",
+    "score": 0.1173
+   },
+   {
+    "id": "tt_jurassic_park",
+    "score": 0.1075
+   },
+   {
+    "id": "tt_grand_budapest",
+    "score": 0.1073
+   }
+  ],
+  "tt_baahubali": [
+   {
+    "id": "tt_rrr",
+    "score": 0.2452
+   },
+   {
+    "id": "tt_kgf",
+    "score": 0.1457
+   },
+   {
+    "id": "tt_gladiator",
+    "score": 0.1397
+   },
+   {
+    "id": "tt_spirited_away",
+    "score": 0.1378
+   },
+   {
+    "id": "tt_your_name",
+    "score": 0.1152
+   },
+   {
+    "id": "tt_mad_max",
+    "score": 0.1147
+   },
+   {
+    "id": "tt_coco",
+    "score": 0.1067
+   },
+   {
+    "id": "tt_barbie",
+    "score": 0.1057
+   },
+   {
+    "id": "tt_soul",
+    "score": 0.0996
+   },
+   {
+    "id": "tt_get_out",
+    "score": 0.0967
+   }
+  ],
+  "tt_forrest_gump": [
+   {
+    "id": "tt_cast_away",
+    "score": 0.1996
+   },
+   {
+    "id": "tt_friends",
+    "score": 0.1864
+   },
+   {
+    "id": "tt_titanic",
+    "score": 0.1711
+   },
+   {
+    "id": "tt_toy_story",
+    "score": 0.1271
+   },
+   {
+    "id": "tt_past_lives",
+    "score": 0.1265
+   },
+   {
+    "id": "tt_la_la_land",
+    "score": 0.1221
+   },
+   {
+    "id": "tt_your_name",
+    "score": 0.1221
+   },
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.114
+   },
+   {
+    "id": "tt_amelie",
+    "score": 0.0983
+   },
+   {
+    "id": "tt_shawshank",
+    "score": 0.0969
+   }
+  ],
+  "tt_cast_away": [
+   {
+    "id": "tt_forrest_gump",
+    "score": 0.1996
+   },
+   {
+    "id": "tt_gladiator",
+    "score": 0.1799
+   },
+   {
+    "id": "tt_interstellar",
+    "score": 0.1619
+   },
+   {
+    "id": "tt_up",
+    "score": 0.1544
+   },
+   {
+    "id": "tt_grand_budapest",
+    "score": 0.1311
+   },
+   {
+    "id": "tt_rrr",
+    "score": 0.1251
+   },
+   {
+    "id": "tt_barbie",
+    "score": 0.1078
+   },
+   {
+    "id": "tt_mad_max",
+    "score": 0.1033
+   },
+   {
+    "id": "tt_avengers",
+    "score": 0.0977
+   },
+   {
+    "id": "tt_jurassic_park",
+    "score": 0.0956
+   }
+  ],
+  "tt_the_office": [
+   {
+    "id": "tt_amelie",
+    "score": 0.2097
+   },
+   {
+    "id": "tt_friends",
+    "score": 0.1761
+   },
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.1705
+   },
+   {
+    "id": "tt_panchayat",
+    "score": 0.1657
+   },
+   {
+    "id": "tt_seinfeld",
+    "score": 0.1453
+   },
+   {
+    "id": "tt_3_idiots",
+    "score": 0.143
+   },
+   {
+    "id": "tt_wednesday",
+    "score": 0.1224
+   },
+   {
+    "id": "tt_barbie",
+    "score": 0.1132
+   },
+   {
+    "id": "tt_toy_story",
+    "score": 0.1111
+   },
+   {
+    "id": "tt_grand_budapest",
+    "score": 0.1076
+   }
+  ],
+  "tt_breaking_bad": [
+   {
+    "id": "tt_sacred_games",
+    "score": 0.218
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.1795
+   },
+   {
+    "id": "tt_dark_knight",
+    "score": 0.1744
+   },
+   {
+    "id": "tt_money_heist",
+    "score": 0.1729
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.1683
+   },
+   {
+    "id": "tt_mirzapur",
+    "score": 0.1526
+   },
+   {
+    "id": "tt_scam_1992",
+    "score": 0.148
+   },
+   {
+    "id": "tt_vikram",
+    "score": 0.1476
+   },
+   {
+    "id": "tt_goodfellas",
+    "score": 0.146
+   },
+   {
+    "id": "tt_pulp_fiction",
+    "score": 0.1437
+   }
+  ],
+  "tt_stranger_things": [
+   {
+    "id": "tt_the_conjuring",
+    "score": 0.198
+   },
+   {
+    "id": "tt_get_out",
+    "score": 0.1742
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.1316
+   },
+   {
+    "id": "tt_cowboy_bebop",
+    "score": 0.1252
+   },
+   {
+    "id": "tt_arrival",
+    "score": 0.114
+   },
+   {
+    "id": "tt_jurassic_park",
+    "score": 0.1117
+   },
+   {
+    "id": "tt_interstellar",
+    "score": 0.1099
+   },
+   {
+    "id": "tt_dark",
+    "score": 0.0876
+   },
+   {
+    "id": "tt_mad_max",
+    "score": 0.0863
+   },
+   {
+    "id": "tt_avengers",
+    "score": 0.0816
+   }
+  ],
+  "tt_money_heist": [
+   {
+    "id": "tt_dark_knight",
+    "score": 0.193
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.1729
+   },
+   {
+    "id": "tt_sacred_games",
+    "score": 0.1682
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.1559
+   },
+   {
+    "id": "tt_vikram",
+    "score": 0.139
+   },
+   {
+    "id": "tt_scam_1992",
+    "score": 0.1115
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.111
+   },
+   {
+    "id": "tt_mirzapur",
+    "score": 0.1075
+   },
+   {
+    "id": "tt_shorts_reel",
+    "score": 0.089
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.086
+   }
+  ],
+  "tt_dark": [
+   {
+    "id": "tt_arrival",
+    "score": 0.2334
+   },
+   {
+    "id": "tt_shorts_reel",
+    "score": 0.1818
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.1647
+   },
+   {
+    "id": "tt_get_out",
+    "score": 0.1556
+   },
+   {
+    "id": "tt_wednesday",
+    "score": 0.1386
+   },
+   {
+    "id": "tt_interstellar",
+    "score": 0.136
+   },
+   {
+    "id": "tt_jurassic_park",
+    "score": 0.1164
+   },
+   {
+    "id": "tt_matrix",
+    "score": 0.1102
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.1086
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.1019
+   }
+  ],
+  "tt_sacred_games": [
+   {
+    "id": "tt_drishyam",
+    "score": 0.2581
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.218
+   },
+   {
+    "id": "tt_pulp_fiction",
+    "score": 0.1832
+   },
+   {
+    "id": "tt_mirzapur",
+    "score": 0.177
+   },
+   {
+    "id": "tt_money_heist",
+    "score": 0.1682
+   },
+   {
+    "id": "tt_scam_1992",
+    "score": 0.1664
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.1573
+   },
+   {
+    "id": "tt_vikram",
+    "score": 0.1336
+   },
+   {
+    "id": "tt_squid_game",
+    "score": 0.1259
+   },
+   {
+    "id": "tt_dark_knight",
+    "score": 0.1252
+   }
+  ],
+  "tt_panchayat": [
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.1685
+   },
+   {
+    "id": "tt_the_office",
+    "score": 0.1657
+   },
+   {
+    "id": "tt_3_idiots",
+    "score": 0.1593
+   },
+   {
+    "id": "tt_friends",
+    "score": 0.1518
+   },
+   {
+    "id": "tt_the_bear",
+    "score": 0.124
+   },
+   {
+    "id": "tt_wednesday",
+    "score": 0.1231
+   },
+   {
+    "id": "tt_seinfeld",
+    "score": 0.1231
+   },
+   {
+    "id": "tt_barbie",
+    "score": 0.1157
+   },
+   {
+    "id": "tt_grand_budapest",
+    "score": 0.1155
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.1112
+   }
+  ],
+  "tt_planet_earth": [
+   {
+    "id": "tt_our_planet",
+    "score": 0.6002
+   },
+   {
+    "id": "tt_friends",
+    "score": 0.0848
+   },
+   {
+    "id": "tt_the_crown",
+    "score": 0.0792
+   },
+   {
+    "id": "tt_cast_away",
+    "score": 0.0766
+   },
+   {
+    "id": "tt_dangal",
+    "score": 0.0566
+   },
+   {
+    "id": "tt_barbie",
+    "score": 0.0545
+   },
+   {
+    "id": "tt_soul",
+    "score": 0.0513
+   },
+   {
+    "id": "tt_spirited_away",
+    "score": 0.0427
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.0369
+   },
+   {
+    "id": "tt_stranger_things",
+    "score": 0.0322
+   }
+  ],
+  "tt_the_conjuring": [
+   {
+    "id": "tt_get_out",
+    "score": 0.295
+   },
+   {
+    "id": "tt_stranger_things",
+    "score": 0.198
+   },
+   {
+    "id": "tt_parasite",
+    "score": 0.1245
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.1195
+   },
+   {
+    "id": "tt_shorts_reel",
+    "score": 0.0854
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.0844
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.0832
+   },
+   {
+    "id": "tt_money_heist",
+    "score": 0.074
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.0733
+   },
+   {
+    "id": "tt_sacred_games",
+    "score": 0.0712
+   }
+  ],
+  "tt_get_out": [
+   {
+    "id": "tt_the_conjuring",
+    "score": 0.295
+   },
+   {
+    "id": "tt_shorts_reel",
+    "score": 0.1909
+   },
+   {
+    "id": "tt_stranger_things",
+    "score": 0.1742
+   },
+   {
+    "id": "tt_dark",
+    "score": 0.1556
+   },
+   {
+    "id": "tt_parasite",
+    "score": 0.1462
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.1443
+   },
+   {
+    "id": "tt_arrival",
+    "score": 0.1312
+   },
+   {
+    "id": "tt_wednesday",
+    "score": 0.1056
+   },
+   {
+    "id": "tt_baahubali",
+    "score": 0.0967
+   },
+   {
+    "id": "tt_squid_game",
+    "score": 0.0782
+   }
+  ],
+  "tt_toy_story": [
+   {
+    "id": "tt_soul",
+    "score": 0.255
+   },
+   {
+    "id": "tt_coco",
+    "score": 0.2445
+   },
+   {
+    "id": "tt_up",
+    "score": 0.2437
+   },
+   {
+    "id": "tt_spirited_away",
+    "score": 0.2394
+   },
+   {
+    "id": "tt_friends",
+    "score": 0.1821
+   },
+   {
+    "id": "tt_3_idiots",
+    "score": 0.1423
+   },
+   {
+    "id": "tt_forrest_gump",
+    "score": 0.1271
+   },
+   {
+    "id": "tt_cowboy_bebop",
+    "score": 0.1205
+   },
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.1175
+   },
+   {
+    "id": "tt_seinfeld",
+    "score": 0.1136
+   }
+  ],
+  "tt_coco": [
+   {
+    "id": "tt_soul",
+    "score": 0.3218
+   },
+   {
+    "id": "tt_spirited_away",
+    "score": 0.3044
+   },
+   {
+    "id": "tt_up",
+    "score": 0.2461
+   },
+   {
+    "id": "tt_toy_story",
+    "score": 0.2445
+   },
+   {
+    "id": "tt_your_name",
+    "score": 0.2217
+   },
+   {
+    "id": "tt_baahubali",
+    "score": 0.1067
+   },
+   {
+    "id": "tt_barbie",
+    "score": 0.1061
+   },
+   {
+    "id": "tt_wednesday",
+    "score": 0.0927
+   },
+   {
+    "id": "tt_cowboy_bebop",
+    "score": 0.0866
+   },
+   {
+    "id": "tt_grand_budapest",
+    "score": 0.0776
+   }
+  ],
+  "tt_up": [
+   {
+    "id": "tt_soul",
+    "score": 0.2869
+   },
+   {
+    "id": "tt_coco",
+    "score": 0.2461
+   },
+   {
+    "id": "tt_spirited_away",
+    "score": 0.2447
+   },
+   {
+    "id": "tt_toy_story",
+    "score": 0.2437
+   },
+   {
+    "id": "tt_cast_away",
+    "score": 0.1544
+   },
+   {
+    "id": "tt_gladiator",
+    "score": 0.1205
+   },
+   {
+    "id": "tt_your_name",
+    "score": 0.1199
+   },
+   {
+    "id": "tt_interstellar",
+    "score": 0.1079
+   },
+   {
+    "id": "tt_barbie",
+    "score": 0.0875
+   },
+   {
+    "id": "tt_cowboy_bebop",
+    "score": 0.0863
+   }
+  ],
+  "tt_whiplash": [
+   {
+    "id": "tt_la_la_land",
+    "score": 0.2823
+   },
+   {
+    "id": "tt_queens_gambit",
+    "score": 0.1062
+   },
+   {
+    "id": "tt_baahubali",
+    "score": 0.095
+   },
+   {
+    "id": "tt_scam_1992",
+    "score": 0.091
+   },
+   {
+    "id": "tt_the_bear",
+    "score": 0.0895
+   },
+   {
+    "id": "tt_shawshank",
+    "score": 0.0826
+   },
+   {
+    "id": "tt_dangal",
+    "score": 0.082
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.0708
+   },
+   {
+    "id": "tt_get_out",
+    "score": 0.0682
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.0666
+   }
+  ],
+  "tt_la_la_land": [
+   {
+    "id": "tt_whiplash",
+    "score": 0.2823
+   },
+   {
+    "id": "tt_past_lives",
+    "score": 0.2133
+   },
+   {
+    "id": "tt_titanic",
+    "score": 0.155
+   },
+   {
+    "id": "tt_friends",
+    "score": 0.15
+   },
+   {
+    "id": "tt_your_name",
+    "score": 0.1454
+   },
+   {
+    "id": "tt_forrest_gump",
+    "score": 0.1221
+   },
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.1076
+   },
+   {
+    "id": "tt_goodfellas",
+    "score": 0.0934
+   },
+   {
+    "id": "tt_amelie",
+    "score": 0.0928
+   },
+   {
+    "id": "tt_scam_1992",
+    "score": 0.0784
+   }
+  ],
+  "tt_pulp_fiction": [
+   {
+    "id": "tt_goodfellas",
+    "score": 0.2566
+   },
+   {
+    "id": "tt_sacred_games",
+    "score": 0.1832
+   },
+   {
+    "id": "tt_shawshank",
+    "score": 0.1523
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.1437
+   },
+   {
+    "id": "tt_dark_knight",
+    "score": 0.1353
+   },
+   {
+    "id": "tt_mirzapur",
+    "score": 0.1198
+   },
+   {
+    "id": "tt_kgf",
+    "score": 0.1114
+   },
+   {
+    "id": "tt_scam_1992",
+    "score": 0.1095
+   },
+   {
+    "id": "tt_parasite",
+    "score": 0.1072
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.1057
+   }
+  ],
+  "tt_matrix": [
+   {
+    "id": "tt_mad_max",
+    "score": 0.1902
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.1868
+   },
+   {
+    "id": "tt_avengers",
+    "score": 0.1799
+   },
+   {
+    "id": "tt_cowboy_bebop",
+    "score": 0.1653
+   },
+   {
+    "id": "tt_jurassic_park",
+    "score": 0.1414
+   },
+   {
+    "id": "tt_arrival",
+    "score": 0.1383
+   },
+   {
+    "id": "tt_dark",
+    "score": 0.1102
+   },
+   {
+    "id": "tt_kgf",
+    "score": 0.1097
+   },
+   {
+    "id": "tt_rrr",
+    "score": 0.1062
+   },
+   {
+    "id": "tt_vikram",
+    "score": 0.1004
+   }
+  ],
+  "tt_shawshank": [
+   {
+    "id": "tt_goodfellas",
+    "score": 0.1547
+   },
+   {
+    "id": "tt_pulp_fiction",
+    "score": 0.1523
+   },
+   {
+    "id": "tt_scam_1992",
+    "score": 0.1455
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.1124
+   },
+   {
+    "id": "tt_kgf",
+    "score": 0.109
+   },
+   {
+    "id": "tt_dark_knight",
+    "score": 0.1073
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.1034
+   },
+   {
+    "id": "tt_forrest_gump",
+    "score": 0.0969
+   },
+   {
+    "id": "tt_sacred_games",
+    "score": 0.0945
+   },
+   {
+    "id": "tt_dangal",
+    "score": 0.0941
+   }
+  ],
+  "tt_goodfellas": [
+   {
+    "id": "tt_scam_1992",
+    "score": 0.3559
+   },
+   {
+    "id": "tt_pulp_fiction",
+    "score": 0.2566
+   },
+   {
+    "id": "tt_oppenheimer",
+    "score": 0.1566
+   },
+   {
+    "id": "tt_shawshank",
+    "score": 0.1547
+   },
+   {
+    "id": "tt_dangal",
+    "score": 0.1469
+   },
+   {
+    "id": "tt_the_crown",
+    "score": 0.1468
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.146
+   },
+   {
+    "id": "tt_12th_fail",
+    "score": 0.1402
+   },
+   {
+    "id": "tt_dark_knight",
+    "score": 0.1374
+   },
+   {
+    "id": "tt_sacred_games",
+    "score": 0.1246
+   }
+  ],
+  "tt_gladiator": [
+   {
+    "id": "tt_rrr",
+    "score": 0.2233
+   },
+   {
+    "id": "tt_mad_max",
+    "score": 0.2018
+   },
+   {
+    "id": "tt_cast_away",
+    "score": 0.1799
+   },
+   {
+    "id": "tt_interstellar",
+    "score": 0.1619
+   },
+   {
+    "id": "tt_avengers",
+    "score": 0.157
+   },
+   {
+    "id": "tt_kgf",
+    "score": 0.1449
+   },
+   {
+    "id": "tt_baahubali",
+    "score": 0.1397
+   },
+   {
+    "id": "tt_dark_knight",
+    "score": 0.1356
+   },
+   {
+    "id": "tt_grand_budapest",
+    "score": 0.1238
+   },
+   {
+    "id": "tt_up",
+    "score": 0.1205
+   }
+  ],
+  "tt_amelie": [
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.2256
+   },
+   {
+    "id": "tt_the_office",
+    "score": 0.2097
+   },
+   {
+    "id": "tt_friends",
+    "score": 0.2021
+   },
+   {
+    "id": "tt_grand_budapest",
+    "score": 0.122
+   },
+   {
+    "id": "tt_3_idiots",
+    "score": 0.1091
+   },
+   {
+    "id": "tt_panchayat",
+    "score": 0.1077
+   },
+   {
+    "id": "tt_past_lives",
+    "score": 0.1019
+   },
+   {
+    "id": "tt_your_name",
+    "score": 0.0986
+   },
+   {
+    "id": "tt_forrest_gump",
+    "score": 0.0983
+   },
+   {
+    "id": "tt_la_la_land",
+    "score": 0.0928
+   }
+  ],
+  "tt_your_name": [
+   {
+    "id": "tt_spirited_away",
+    "score": 0.2358
+   },
+   {
+    "id": "tt_coco",
+    "score": 0.2217
+   },
+   {
+    "id": "tt_soul",
+    "score": 0.1948
+   },
+   {
+    "id": "tt_titanic",
+    "score": 0.1574
+   },
+   {
+    "id": "tt_past_lives",
+    "score": 0.1469
+   },
+   {
+    "id": "tt_la_la_land",
+    "score": 0.1454
+   },
+   {
+    "id": "tt_cowboy_bebop",
+    "score": 0.1426
+   },
+   {
+    "id": "tt_forrest_gump",
+    "score": 0.1221
+   },
+   {
+    "id": "tt_up",
+    "score": 0.1199
+   },
+   {
+    "id": "tt_baahubali",
+    "score": 0.1152
+   }
+  ],
+  "tt_chernobyl": [
+   {
+    "id": "tt_the_crown",
+    "score": 0.1908
+   },
+   {
+    "id": "tt_oppenheimer",
+    "score": 0.1848
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.1683
+   },
+   {
+    "id": "tt_titanic",
+    "score": 0.1573
+   },
+   {
+    "id": "tt_sacred_games",
+    "score": 0.1573
+   },
+   {
+    "id": "tt_squid_game",
+    "score": 0.1358
+   },
+   {
+    "id": "tt_parasite",
+    "score": 0.1302
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.1188
+   },
+   {
+    "id": "tt_money_heist",
+    "score": 0.111
+   },
+   {
+    "id": "tt_dark",
+    "score": 0.1086
+   }
+  ],
+  "tt_the_crown": [
+   {
+    "id": "tt_oppenheimer",
+    "score": 0.2574
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.1908
+   },
+   {
+    "id": "tt_scam_1992",
+    "score": 0.1552
+   },
+   {
+    "id": "tt_titanic",
+    "score": 0.1484
+   },
+   {
+    "id": "tt_goodfellas",
+    "score": 0.1468
+   },
+   {
+    "id": "tt_dangal",
+    "score": 0.1363
+   },
+   {
+    "id": "tt_12th_fail",
+    "score": 0.119
+   },
+   {
+    "id": "tt_planet_earth",
+    "score": 0.0792
+   },
+   {
+    "id": "tt_our_planet",
+    "score": 0.0776
+   },
+   {
+    "id": "tt_queens_gambit",
+    "score": 0.055
+   }
+  ],
+  "tt_friends": [
+   {
+    "id": "tt_past_lives",
+    "score": 0.2582
+   },
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.2565
+   },
+   {
+    "id": "tt_amelie",
+    "score": 0.2021
+   },
+   {
+    "id": "tt_forrest_gump",
+    "score": 0.1864
+   },
+   {
+    "id": "tt_seinfeld",
+    "score": 0.1853
+   },
+   {
+    "id": "tt_toy_story",
+    "score": 0.1821
+   },
+   {
+    "id": "tt_the_office",
+    "score": 0.1761
+   },
+   {
+    "id": "tt_panchayat",
+    "score": 0.1518
+   },
+   {
+    "id": "tt_la_la_land",
+    "score": 0.15
+   },
+   {
+    "id": "tt_3_idiots",
+    "score": 0.1484
+   }
+  ],
+  "tt_avengers": [
+   {
+    "id": "tt_mad_max",
+    "score": 0.2575
+   },
+   {
+    "id": "tt_matrix",
+    "score": 0.1799
+   },
+   {
+    "id": "tt_jurassic_park",
+    "score": 0.1731
+   },
+   {
+    "id": "tt_rrr",
+    "score": 0.1697
+   },
+   {
+    "id": "tt_interstellar",
+    "score": 0.1683
+   },
+   {
+    "id": "tt_gladiator",
+    "score": 0.157
+   },
+   {
+    "id": "tt_arrival",
+    "score": 0.1567
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.1472
+   },
+   {
+    "id": "tt_cowboy_bebop",
+    "score": 0.1277
+   },
+   {
+    "id": "tt_kgf",
+    "score": 0.1126
+   }
+  ],
+  "tt_jurassic_park": [
+   {
+    "id": "tt_mad_max",
+    "score": 0.183
+   },
+   {
+    "id": "tt_avengers",
+    "score": 0.1731
+   },
+   {
+    "id": "tt_interstellar",
+    "score": 0.1537
+   },
+   {
+    "id": "tt_matrix",
+    "score": 0.1414
+   },
+   {
+    "id": "tt_cowboy_bebop",
+    "score": 0.1368
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.1306
+   },
+   {
+    "id": "tt_dark",
+    "score": 0.1164
+   },
+   {
+    "id": "tt_stranger_things",
+    "score": 0.1117
+   },
+   {
+    "id": "tt_rrr",
+    "score": 0.1075
+   },
+   {
+    "id": "tt_cast_away",
+    "score": 0.0956
+   }
+  ],
+  "tt_titanic": [
+   {
+    "id": "tt_forrest_gump",
+    "score": 0.1711
+   },
+   {
+    "id": "tt_past_lives",
+    "score": 0.163
+   },
+   {
+    "id": "tt_your_name",
+    "score": 0.1574
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.1573
+   },
+   {
+    "id": "tt_oppenheimer",
+    "score": 0.1572
+   },
+   {
+    "id": "tt_la_la_land",
+    "score": 0.155
+   },
+   {
+    "id": "tt_the_crown",
+    "score": 0.1484
+   },
+   {
+    "id": "tt_friends",
+    "score": 0.1188
+   },
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.1073
+   },
+   {
+    "id": "tt_amelie",
+    "score": 0.0925
+   }
+  ],
+  "tt_soul": [
+   {
+    "id": "tt_coco",
+    "score": 0.3218
+   },
+   {
+    "id": "tt_spirited_away",
+    "score": 0.3175
+   },
+   {
+    "id": "tt_up",
+    "score": 0.2869
+   },
+   {
+    "id": "tt_toy_story",
+    "score": 0.255
+   },
+   {
+    "id": "tt_your_name",
+    "score": 0.1948
+   },
+   {
+    "id": "tt_barbie",
+    "score": 0.1308
+   },
+   {
+    "id": "tt_wednesday",
+    "score": 0.1154
+   },
+   {
+    "id": "tt_baahubali",
+    "score": 0.0996
+   },
+   {
+    "id": "tt_cowboy_bebop",
+    "score": 0.0903
+   },
+   {
+    "id": "tt_gladiator",
+    "score": 0.0764
+   }
+  ],
+  "tt_squid_game": [
+   {
+    "id": "tt_mirzapur",
+    "score": 0.1567
+   },
+   {
+    "id": "tt_parasite",
+    "score": 0.148
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.1391
+   },
+   {
+    "id": "tt_vikram",
+    "score": 0.1386
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.1358
+   },
+   {
+    "id": "tt_sacred_games",
+    "score": 0.1259
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.1211
+   },
+   {
+    "id": "tt_dark_knight",
+    "score": 0.1138
+   },
+   {
+    "id": "tt_the_bear",
+    "score": 0.1027
+   },
+   {
+    "id": "tt_shorts_reel",
+    "score": 0.1002
+   }
+  ],
+  "tt_mirzapur": [
+   {
+    "id": "tt_kgf",
+    "score": 0.2207
+   },
+   {
+    "id": "tt_dark_knight",
+    "score": 0.1791
+   },
+   {
+    "id": "tt_sacred_games",
+    "score": 0.177
+   },
+   {
+    "id": "tt_scam_1992",
+    "score": 0.1625
+   },
+   {
+    "id": "tt_squid_game",
+    "score": 0.1567
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.1526
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.1428
+   },
+   {
+    "id": "tt_vikram",
+    "score": 0.1336
+   },
+   {
+    "id": "tt_goodfellas",
+    "score": 0.1217
+   },
+   {
+    "id": "tt_pulp_fiction",
+    "score": 0.1198
+   }
+  ],
+  "tt_scam_1992": [
+   {
+    "id": "tt_goodfellas",
+    "score": 0.3559
+   },
+   {
+    "id": "tt_12th_fail",
+    "score": 0.2185
+   },
+   {
+    "id": "tt_queens_gambit",
+    "score": 0.2079
+   },
+   {
+    "id": "tt_dangal",
+    "score": 0.2076
+   },
+   {
+    "id": "tt_oppenheimer",
+    "score": 0.1828
+   },
+   {
+    "id": "tt_sacred_games",
+    "score": 0.1664
+   },
+   {
+    "id": "tt_mirzapur",
+    "score": 0.1625
+   },
+   {
+    "id": "tt_the_crown",
+    "score": 0.1552
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.1527
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.148
+   }
+  ],
+  "tt_kgf": [
+   {
+    "id": "tt_mirzapur",
+    "score": 0.2207
+   },
+   {
+    "id": "tt_rrr",
+    "score": 0.1683
+   },
+   {
+    "id": "tt_vikram",
+    "score": 0.1677
+   },
+   {
+    "id": "tt_dark_knight",
+    "score": 0.1605
+   },
+   {
+    "id": "tt_mad_max",
+    "score": 0.1532
+   },
+   {
+    "id": "tt_baahubali",
+    "score": 0.1457
+   },
+   {
+    "id": "tt_gladiator",
+    "score": 0.1449
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.1135
+   },
+   {
+    "id": "tt_goodfellas",
+    "score": 0.1132
+   },
+   {
+    "id": "tt_avengers",
+    "score": 0.1126
+   }
+  ],
+  "tt_vikram": [
+   {
+    "id": "tt_kgf",
+    "score": 0.1677
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.1476
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.1425
+   },
+   {
+    "id": "tt_dark_knight",
+    "score": 0.141
+   },
+   {
+    "id": "tt_money_heist",
+    "score": 0.139
+   },
+   {
+    "id": "tt_squid_game",
+    "score": 0.1386
+   },
+   {
+    "id": "tt_sacred_games",
+    "score": 0.1336
+   },
+   {
+    "id": "tt_mirzapur",
+    "score": 0.1336
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.1334
+   },
+   {
+    "id": "tt_rrr",
+    "score": 0.1173
+   }
+  ],
+  "tt_drishyam": [
+   {
+    "id": "tt_sacred_games",
+    "score": 0.2581
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.1795
+   },
+   {
+    "id": "tt_money_heist",
+    "score": 0.1559
+   },
+   {
+    "id": "tt_scam_1992",
+    "score": 0.1527
+   },
+   {
+    "id": "tt_parasite",
+    "score": 0.1448
+   },
+   {
+    "id": "tt_get_out",
+    "score": 0.1443
+   },
+   {
+    "id": "tt_mirzapur",
+    "score": 0.1428
+   },
+   {
+    "id": "tt_vikram",
+    "score": 0.1425
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.1275
+   },
+   {
+    "id": "tt_the_conjuring",
+    "score": 0.1195
+   }
+  ],
+  "tt_queens_gambit": [
+   {
+    "id": "tt_scam_1992",
+    "score": 0.2079
+   },
+   {
+    "id": "tt_the_bear",
+    "score": 0.1378
+   },
+   {
+    "id": "tt_whiplash",
+    "score": 0.1062
+   },
+   {
+    "id": "tt_goodfellas",
+    "score": 0.1059
+   },
+   {
+    "id": "tt_12th_fail",
+    "score": 0.086
+   },
+   {
+    "id": "tt_squid_game",
+    "score": 0.0838
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.0832
+   },
+   {
+    "id": "tt_oppenheimer",
+    "score": 0.0828
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.0812
+   },
+   {
+    "id": "tt_shawshank",
+    "score": 0.0812
+   }
+  ],
+  "tt_mad_max": [
+   {
+    "id": "tt_avengers",
+    "score": 0.2575
+   },
+   {
+    "id": "tt_rrr",
+    "score": 0.2125
+   },
+   {
+    "id": "tt_interstellar",
+    "score": 0.211
+   },
+   {
+    "id": "tt_gladiator",
+    "score": 0.2018
+   },
+   {
+    "id": "tt_matrix",
+    "score": 0.1902
+   },
+   {
+    "id": "tt_jurassic_park",
+    "score": 0.183
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.1556
+   },
+   {
+    "id": "tt_kgf",
+    "score": 0.1532
+   },
+   {
+    "id": "tt_cowboy_bebop",
+    "score": 0.135
+   },
+   {
+    "id": "tt_baahubali",
+    "score": 0.1147
+   }
+  ],
+  "tt_arrival": [
+   {
+    "id": "tt_dark",
+    "score": 0.2334
+   },
+   {
+    "id": "tt_interstellar",
+    "score": 0.1588
+   },
+   {
+    "id": "tt_avengers",
+    "score": 0.1567
+   },
+   {
+    "id": "tt_shorts_reel",
+    "score": 0.1498
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.1393
+   },
+   {
+    "id": "tt_matrix",
+    "score": 0.1383
+   },
+   {
+    "id": "tt_get_out",
+    "score": 0.1312
+   },
+   {
+    "id": "tt_wednesday",
+    "score": 0.1217
+   },
+   {
+    "id": "tt_stranger_things",
+    "score": 0.114
+   },
+   {
+    "id": "tt_mad_max",
+    "score": 0.1057
+   }
+  ],
+  "tt_grand_budapest": [
+   {
+    "id": "tt_barbie",
+    "score": 0.1846
+   },
+   {
+    "id": "tt_cast_away",
+    "score": 0.1311
+   },
+   {
+    "id": "tt_3_idiots",
+    "score": 0.1295
+   },
+   {
+    "id": "tt_interstellar",
+    "score": 0.1261
+   },
+   {
+    "id": "tt_gladiator",
+    "score": 0.1238
+   },
+   {
+    "id": "tt_amelie",
+    "score": 0.122
+   },
+   {
+    "id": "tt_panchayat",
+    "score": 0.1155
+   },
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.1138
+   },
+   {
+    "id": "tt_seinfeld",
+    "score": 0.11
+   },
+   {
+    "id": "tt_parasite",
+    "score": 0.1086
+   }
+  ],
+  "tt_cowboy_bebop": [
+   {
+    "id": "tt_matrix",
+    "score": 0.1653
+   },
+   {
+    "id": "tt_your_name",
+    "score": 0.1426
+   },
+   {
+    "id": "tt_jurassic_park",
+    "score": 0.1368
+   },
+   {
+    "id": "tt_mad_max",
+    "score": 0.135
+   },
+   {
+    "id": "tt_spirited_away",
+    "score": 0.1331
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.1281
+   },
+   {
+    "id": "tt_avengers",
+    "score": 0.1277
+   },
+   {
+    "id": "tt_stranger_things",
+    "score": 0.1252
+   },
+   {
+    "id": "tt_toy_story",
+    "score": 0.1205
+   },
+   {
+    "id": "tt_soul",
+    "score": 0.0903
+   }
+  ],
+  "tt_seinfeld": [
+   {
+    "id": "tt_friends",
+    "score": 0.1853
+   },
+   {
+    "id": "tt_3_idiots",
+    "score": 0.1656
+   },
+   {
+    "id": "tt_barbie",
+    "score": 0.1631
+   },
+   {
+    "id": "tt_the_office",
+    "score": 0.1453
+   },
+   {
+    "id": "tt_wednesday",
+    "score": 0.1251
+   },
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.1237
+   },
+   {
+    "id": "tt_panchayat",
+    "score": 0.1231
+   },
+   {
+    "id": "tt_parasite",
+    "score": 0.1212
+   },
+   {
+    "id": "tt_toy_story",
+    "score": 0.1136
+   },
+   {
+    "id": "tt_grand_budapest",
+    "score": 0.11
+   }
+  ],
+  "tt_our_planet": [
+   {
+    "id": "tt_planet_earth",
+    "score": 0.6002
+   },
+   {
+    "id": "tt_the_crown",
+    "score": 0.0776
+   },
+   {
+    "id": "tt_amelie",
+    "score": 0.0598
+   },
+   {
+    "id": "tt_soul",
+    "score": 0.0503
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.0361
+   },
+   {
+    "id": "tt_stranger_things",
+    "score": 0.0316
+   },
+   {
+    "id": "tt_money_heist",
+    "score": 0.0277
+   },
+   {
+    "id": "tt_sacred_games",
+    "score": 0.0266
+   },
+   {
+    "id": "tt_queens_gambit",
+    "score": 0.0265
+   },
+   {
+    "id": "tt_seinfeld",
+    "score": 0.0261
+   }
+  ],
+  "tt_the_bear": [
+   {
+    "id": "tt_queens_gambit",
+    "score": 0.1378
+   },
+   {
+    "id": "tt_parasite",
+    "score": 0.1295
+   },
+   {
+    "id": "tt_panchayat",
+    "score": 0.124
+   },
+   {
+    "id": "tt_scam_1992",
+    "score": 0.1213
+   },
+   {
+    "id": "tt_squid_game",
+    "score": 0.1027
+   },
+   {
+    "id": "tt_wednesday",
+    "score": 0.1008
+   },
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.0986
+   },
+   {
+    "id": "tt_seinfeld",
+    "score": 0.0973
+   },
+   {
+    "id": "tt_the_office",
+    "score": 0.0951
+   },
+   {
+    "id": "tt_3_idiots",
+    "score": 0.0938
+   }
+  ],
+  "tt_wednesday": [
+   {
+    "id": "tt_barbie",
+    "score": 0.2129
+   },
+   {
+    "id": "tt_shorts_reel",
+    "score": 0.1535
+   },
+   {
+    "id": "tt_dark",
+    "score": 0.1386
+   },
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.1254
+   },
+   {
+    "id": "tt_seinfeld",
+    "score": 0.1251
+   },
+   {
+    "id": "tt_panchayat",
+    "score": 0.1231
+   },
+   {
+    "id": "tt_the_office",
+    "score": 0.1224
+   },
+   {
+    "id": "tt_arrival",
+    "score": 0.1217
+   },
+   {
+    "id": "tt_soul",
+    "score": 0.1154
+   },
+   {
+    "id": "tt_friends",
+    "score": 0.1121
+   }
+  ],
+  "tt_oppenheimer": [
+   {
+    "id": "tt_the_crown",
+    "score": 0.2574
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.1848
+   },
+   {
+    "id": "tt_scam_1992",
+    "score": 0.1828
+   },
+   {
+    "id": "tt_titanic",
+    "score": 0.1572
+   },
+   {
+    "id": "tt_goodfellas",
+    "score": 0.1566
+   },
+   {
+    "id": "tt_12th_fail",
+    "score": 0.1458
+   },
+   {
+    "id": "tt_dangal",
+    "score": 0.1334
+   },
+   {
+    "id": "tt_interstellar",
+    "score": 0.1166
+   },
+   {
+    "id": "tt_dark_knight",
+    "score": 0.0971
+   },
+   {
+    "id": "tt_rrr",
+    "score": 0.0852
+   }
+  ],
+  "tt_barbie": [
+   {
+    "id": "tt_wednesday",
+    "score": 0.2129
+   },
+   {
+    "id": "tt_grand_budapest",
+    "score": 0.1846
+   },
+   {
+    "id": "tt_seinfeld",
+    "score": 0.1631
+   },
+   {
+    "id": "tt_spirited_away",
+    "score": 0.1432
+   },
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.1425
+   },
+   {
+    "id": "tt_soul",
+    "score": 0.1308
+   },
+   {
+    "id": "tt_parasite",
+    "score": 0.1169
+   },
+   {
+    "id": "tt_panchayat",
+    "score": 0.1157
+   },
+   {
+    "id": "tt_the_office",
+    "score": 0.1132
+   },
+   {
+    "id": "tt_toy_story",
+    "score": 0.1099
+   }
+  ],
+  "tt_past_lives": [
+   {
+    "id": "tt_friends",
+    "score": 0.2582
+   },
+   {
+    "id": "tt_la_la_land",
+    "score": 0.2133
+   },
+   {
+    "id": "tt_titanic",
+    "score": 0.163
+   },
+   {
+    "id": "tt_your_name",
+    "score": 0.1469
+   },
+   {
+    "id": "tt_quick_laugh",
+    "score": 0.1328
+   },
+   {
+    "id": "tt_forrest_gump",
+    "score": 0.1265
+   },
+   {
+    "id": "tt_goodfellas",
+    "score": 0.1035
+   },
+   {
+    "id": "tt_amelie",
+    "score": 0.1019
+   },
+   {
+    "id": "tt_squid_game",
+    "score": 0.0897
+   },
+   {
+    "id": "tt_parasite",
+    "score": 0.0879
+   }
+  ],
+  "tt_12th_fail": [
+   {
+    "id": "tt_scam_1992",
+    "score": 0.2185
+   },
+   {
+    "id": "tt_dangal",
+    "score": 0.2078
+   },
+   {
+    "id": "tt_oppenheimer",
+    "score": 0.1458
+   },
+   {
+    "id": "tt_goodfellas",
+    "score": 0.1402
+   },
+   {
+    "id": "tt_the_crown",
+    "score": 0.119
+   },
+   {
+    "id": "tt_rrr",
+    "score": 0.1036
+   },
+   {
+    "id": "tt_gladiator",
+    "score": 0.092
+   },
+   {
+    "id": "tt_shawshank",
+    "score": 0.0898
+   },
+   {
+    "id": "tt_queens_gambit",
+    "score": 0.086
+   },
+   {
+    "id": "tt_the_bear",
+    "score": 0.0724
+   }
+  ],
+  "tt_shorts_reel": [
+   {
+    "id": "tt_get_out",
+    "score": 0.1909
+   },
+   {
+    "id": "tt_dark",
+    "score": 0.1818
+   },
+   {
+    "id": "tt_wednesday",
+    "score": 0.1535
+   },
+   {
+    "id": "tt_arrival",
+    "score": 0.1498
+   },
+   {
+    "id": "tt_vikram",
+    "score": 0.1126
+   },
+   {
+    "id": "tt_breaking_bad",
+    "score": 0.1031
+   },
+   {
+    "id": "tt_chernobyl",
+    "score": 0.1007
+   },
+   {
+    "id": "tt_squid_game",
+    "score": 0.1002
+   },
+   {
+    "id": "tt_inception",
+    "score": 0.0986
+   },
+   {
+    "id": "tt_drishyam",
+    "score": 0.0948
+   }
+  ],
+  "tt_quick_laugh": [
+   {
+    "id": "tt_friends",
+    "score": 0.2565
+   },
+   {
+    "id": "tt_amelie",
+    "score": 0.2256
+   },
+   {
+    "id": "tt_the_office",
+    "score": 0.1705
+   },
+   {
+    "id": "tt_panchayat",
+    "score": 0.1685
+   },
+   {
+    "id": "tt_barbie",
+    "score": 0.1425
+   },
+   {
+    "id": "tt_past_lives",
+    "score": 0.1328
+   },
+   {
+    "id": "tt_wednesday",
+    "score": 0.1254
+   },
+   {
+    "id": "tt_seinfeld",
+    "score": 0.1237
+   },
+   {
+    "id": "tt_toy_story",
+    "score": 0.1175
+   },
+   {
+    "id": "tt_3_idiots",
+    "score": 0.1154
+   }
+  ]
+ }
+}
