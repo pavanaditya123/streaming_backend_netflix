@@ -74,7 +74,7 @@ The only difference between the two is three environment variables. See
 | **subscription-service** | 3005 | Plans, subscriptions, entitlement. **Orchestrates the Subscribe Saga.** | billing (via events) |
 | **billing-service** | 3006 | Payments and refunds. **Saga participant.** | subscription (via events) |
 | **notification-service** | 3007 | Email/push, generated from events. | consumes 3 topics |
-| **recommendation-service** | 3008 | Natural-language search over 26 intents. | catalog, watch-history |
+| **recommendation-service** | 3008 | Natural-language search over 26 intents; ML "Top picks for you" rail ([ml/](ml/README.md)). | catalog, watch-history |
 
 Each service owns its own **database schema** and the repository code does not
 read another service's tables. Local development uses one Postgres instance;
@@ -347,6 +347,7 @@ instance can pull it.
 | [CACHING.md](docs/CACHING.md) | Every cache key, TTL and invalidation trigger |
 | [EVENTS.md](docs/EVENTS.md) | Topics, event schemas, consumer groups, idempotency |
 | [RECOMMENDATIONS.md](docs/RECOMMENDATIONS.md) | All 26 intents and how parsing works |
+| [ml/README.md](ml/README.md) | ML recommender: Pandas cleaning, 5 models compared on MovieLens, MLflow, the served "Top picks for you" model |
 | [runbooks/](docs/runbooks/) | What to check and do for each alert |
 | [INTERVIEW-GUIDE.md](docs/INTERVIEW-GUIDE.md) | The questions this design invites, and honest answers |
 | [legacy-monolith/](legacy-monolith/) | The "before", annotated |

@@ -201,6 +201,18 @@ describe('platform end-to-end', () => {
       assert.equal(entry.positionSeconds, 3600);
     });
 
+    test('4b. that history personalises the home rail through the model', async () => {
+      const res = await api('/recommendations/for-you', { token });
+      assert.equal(res.status, 200);
+      const picks = res.body.rails.find((r) => r.title === 'Top picks for you');
+      assert.ok(picks, 'model rail is present once the user has history');
+      assert.equal(picks.model, 'content-tfidf');
+      const ids = picks.items.map((t) => t.id);
+      assert.ok(ids.length > 0);
+      assert.ok(!ids.includes('tt_rrr'), 'never re-recommends what was just watched');
+      assert.ok(picks.items.every((t) => typeof t.score === 'number' && t.because));
+    });
+
     test('5. the same events made the title trend', async () => {
       const res = await api('/titles/trending?limit=5', { token });
       assert.ok(res.body.items.some((t) => t.viewCount > 0), 'catalog reacted to playback events');

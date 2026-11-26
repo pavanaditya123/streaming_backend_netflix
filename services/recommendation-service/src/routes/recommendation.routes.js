@@ -6,8 +6,10 @@ import {
 } from '@streaming/shared';
 import { parseIntent, INTENT_NAMES, INTENTS } from '../domain/intent-parser.js';
 import { toCatalogQuery, explain, seededShuffle, excludeCompleted, PERSONALIZED_INTENTS } from '../domain/resolver.js';
+import { loadModel, rankForUser } from '../domain/personal-ranker.js';
 
 const log = createLogger('recommendation-service');
+const model = loadModel();
 
 const searchSchema = z.object({
   query: z.string().min(1).max(200),
@@ -186,6 +188,19 @@ async function forYou({ userId, limit, ctx, catalogClient, historyClient }) {
       items: (await hydrate(inProgress.map((h) => h.titleId), catalogClient, ctx)).map((title) => {
         const entry = inProgress.find((h) => h.titleId === title.id);
         return { ...title, resumeAtSeconds: entry.positionSeconds, progressPercent: entry.progressPercent };
+      })
+    });
+  }
+
+  const picks = rankForUser(history, model, { limit });
+  if (picks.length) {
+    const titles = await hydrate(picks.map((p) => p.titleId), catalogClient, ctx);
+    rails.push({
+      title: 'Top picks for you',
+      model: model.model,
+      items: excludeCompleted(titles, history).map((t) => {
+        const pick = picks.find((p) => p.titleId === t.id);
+        return { ...t, score: pick.score, because: pick.because };
       })
     });
   }

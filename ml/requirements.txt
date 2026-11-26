@@ -1,0 +1,7 @@
+pandas>=2.2
+numpy>=2.0
+scipy>=1.13
+scikit-learn>=1.5
+pytest>=8.0
+# Optional: experiment tracking for train.py (skipped if not installed)
+mlflow>=3.0
